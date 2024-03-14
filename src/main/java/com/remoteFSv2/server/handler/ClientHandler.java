@@ -76,22 +76,18 @@ public class ClientHandler extends Thread
 
     private void processRequest(JSONObject request)
     {
-        try
-        {
             var command = request.getString("command");
-
-            var argument = request.getString("argument");
 
             switch(command)
             {
                 case Constants.REGISTER:
 
-                    userController.registerUser(argument.split(",", 2)[0], argument.split(",", 2)[1]);
+                    userController.registerUser(request.getString("username"), request.getString("password"));
 
 
                 case Constants.LOGIN:
 
-                    userController.loginUser(argument.split(",", 2)[0], argument.split(",", 2)[1]);
+                    userController.loginUser(request.getString("username"), request.getString("password"));
 
 
                 case Constants.LIST:
@@ -101,33 +97,29 @@ public class ClientHandler extends Thread
                 case Constants.DOWNLOAD:
                     // Example: DOWNLOAD indexOfFile
 
-                    fileSystemController.getFileName(Integer.parseInt(argument));
+                    fileSystemController.getFileName(1);
 
 
                 case Constants.START_SENDING:
                     // for starting the sending of file when server receives confirmation from "DOWNLOAD"
 
-                    fileSystemController.sendFile(argument);
+                    fileSystemController.sendFile("1");
 
 
                 case Constants.UPLOAD:
                     // Example: UPLOAD fileName
 
-                    fileSystemController.receiveFile(argument);
+                    fileSystemController.receiveFile("argument");
 
 
                 case Constants.DELETE:
                     // Example: DELETE indexOfFile
 
-                    fileSystemController.deleteFile(Integer.parseInt(argument));
+                    fileSystemController.deleteFile(1);
 
 
                 default:
                     System.out.println(Constants.SERVER + Constants.INVALID_INPUT);
             }
-        } catch(NullPointerException e)
-        {
-            System.out.println("[Server] Error: Invalid request!");
-        }
     }
 }

@@ -19,6 +19,7 @@ public class Server
         ThreadPoolExecutor threadPoolExecutor = null;
         
         ClientConnection clientConnection = null;
+
         try
         {
             serverSocket = new ServerSocket(Config.PORT);
@@ -35,7 +36,7 @@ public class Server
 
                 var fileSystemController = new FileSystem(clientConnection, Config.ROOT_DIR_SERVER);
 
-                var userController = new User();
+                var userController = new User(clientConnection);
 
                 var clientHandler = new ClientHandler(clientConnection, fileSystemController, userController);
 

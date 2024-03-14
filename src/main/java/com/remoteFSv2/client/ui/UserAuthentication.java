@@ -52,6 +52,7 @@ public class UserAuthentication
                         System.out.println("--------------------");
                         System.out.println("\t\tLogin");
                         System.out.println("--------------------");
+
                         System.out.print("Enter username: ");
                         username = userHandler.reader.readLine();
 
@@ -60,7 +61,6 @@ public class UserAuthentication
 
                         if(userHandler.authenticateUser(Constants.LOGIN, username, password))
                         {
-                            System.out.println("[Client] Login Successful");
 
                             var fileSystemClient = new FileSystem(userHandler);
 
@@ -68,10 +68,6 @@ public class UserAuthentication
 
                             fileManagerUI.start();
 
-                        }
-                        else
-                        {
-                            System.out.println("[Client] Invalid credentials!");
                         }
 
                         userHandler.close();
@@ -89,10 +85,11 @@ public class UserAuthentication
 
                         username = userInput("username");
 
-                        if(username.isEmpty())
+                        if(username.length() >= 6)
                         {
                             password = userInput("password");
-                            if(password.isEmpty())
+
+                            if(password.length() >= 6)
                             {
                                 if(userHandler.authenticateUser(Constants.LOGIN, username, password))
                                 {
@@ -104,23 +101,21 @@ public class UserAuthentication
                                 }
 
                                 userHandler.close();
-                                break;
                             }
                             else
                             {
                                 System.out.println(Constants.CLIENT + Constants.INVALID_INPUT);
-                                break;
                             }
 
                         }
                         else
                         {
                             System.out.println(Constants.CLIENT + Constants.INVALID_INPUT);
-                            break;
                         }
+                        break;
 
 
-                        // EXIT
+                    // EXIT
                     case 0:
 
                         System.out.println("Exiting client...");
@@ -149,7 +144,6 @@ public class UserAuthentication
                 System.out.println(Constants.INVALID_INPUT + " Valid range = [0-2]");
             } finally
             {
-                sc.close();
                 userHandler.close();
             }
         }

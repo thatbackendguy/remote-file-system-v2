@@ -12,7 +12,9 @@ import java.net.Socket;
 
 public class User
 {
-    private JSONObject request;
+    private JSONObject request = new JSONObject();
+
+    public String UUID;
 
     public final Socket socket;
 
@@ -33,7 +35,6 @@ public class User
     {
         if(command.equals(Constants.LOGIN))
         {
-
             request.clear();
 
             request.put("command", Constants.LOGIN);
@@ -44,7 +45,22 @@ public class User
 
             JSONObject resJSON = new JSONObject(response);
 
-            return resJSON.getString("success").equals("true");
+            if(resJSON.getInt("status")==0)
+            {
+                UUID = resJSON.getString("UUID");
+
+                System.out.println("UUID = "+UUID);
+
+                System.out.println(resJSON.getString("message"));
+
+                return true;
+            }
+            else
+            {
+                System.out.println(resJSON.getString("message"));
+
+                return false;
+            }
 
         }
         else if(command.equals(Constants.REGISTER))
@@ -59,7 +75,18 @@ public class User
 
             JSONObject resJSON = new JSONObject(response);
 
-            return resJSON.getString("success").equals("true");
+            if(resJSON.getInt("status")==0)
+            {
+                System.out.println(resJSON.getString("message"));
+
+                return true;
+            }
+            else
+            {
+                System.out.println(resJSON.getString("message"));
+
+                return false;
+            }
         }
         return false;
     }
