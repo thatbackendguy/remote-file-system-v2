@@ -9,12 +9,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.HashMap;
 
 public class User
 {
     private JSONObject request = new JSONObject();
 
-    public String UUID;
+    private static HashMap<String, String> userData = new HashMap<>();
 
     public final Socket socket;
 
@@ -40,18 +41,20 @@ public class User
             request.put("command", Constants.LOGIN);
             request.put("username", username.trim());
             request.put("password", password.trim());
+            request.put("token", userData.getOrDefault(username, ""));
 
             var response = sendRequest(request.toString());
 
             JSONObject resJSON = new JSONObject(response);
 
-            if(resJSON.getInt("status")==0)
+            if(resJSON.getInt("status") == 0)
             {
-                UUID = resJSON.getString("UUID");
 
-                System.out.println("UUID = "+UUID);
+                userData.put(username, resJSON.getString("token"));
 
                 System.out.println(resJSON.getString("message"));
+
+                System.out.println(userData);
 
                 return true;
             }
@@ -75,9 +78,11 @@ public class User
 
             JSONObject resJSON = new JSONObject(response);
 
-            if(resJSON.getInt("status")==0)
+            if(resJSON.getInt("status") == 0)
             {
                 System.out.println(resJSON.getString("message"));
+
+                userData.put(username, resJSON.getString("token"));
 
                 return true;
             }

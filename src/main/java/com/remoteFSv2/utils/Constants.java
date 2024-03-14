@@ -2,34 +2,41 @@ package com.remoteFSv2.utils;
 
 public class Constants
 {
+
     public static final String SERVER = "[Server] ";
+
+    public static final String IO_ERROR = "Error in Input/Output stream!";
 
     public static final String CLIENT = "[Client] ";
 
     // Switch case options - Request Handler
     public static final String LOGIN = "LOGIN";
 
+    public static final String LOGOUT = "logout";
+
     public static final String REGISTER = "REGISTER";
 
     // commands
 
-    public static final String LIST = "LIST";
+    public static final String LIST = "ls";
 
-    public static final String DOWNLOAD = "DOWNLOAD";
+    public static final String DOWNLOAD = "get";
+
+    public static final String REMOVE_FILE = "rm";
 
     public static final String START_SENDING = "START_SENDING";
 
-    public static final String UPLOAD = "UPLOAD";
+    public static final String UPLOAD = "put";
 
-    public static final String DELETE = "DELETE";
+    public static final String DELETE = "rm";
 
-    public static final String MKDIR = "MKDIR";
+    public static final String MKDIR = "mkdir";
 
-    public static final String BACK = "BACK";
+    public static final String BACK = "back";
 
-    public static final String CD = "CD";
+    public static final String CD = "cd";
 
-    public static final String RMDIR = "RMDIR";
+    public static final String RMDIR = "rmdir";
 
 
     // Register Messages
@@ -103,6 +110,8 @@ public class Constants
     public static final String INVALID_INPUT = "Invalid input!";
 
     public static final String NETWORK_ERROR = "Network error!";
+
+    public static final String IMPROPER_JSON = "Improper JSON format!";
 
     private Constants()
     {

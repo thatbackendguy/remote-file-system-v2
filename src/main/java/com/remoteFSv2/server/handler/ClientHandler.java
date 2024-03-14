@@ -52,7 +52,7 @@ public class ClientHandler extends Thread
 
             res.put("status", "1");
 
-            res.put("message", "Request improper format!");
+            res.put("message", Constants.IMPROPER_JSON);
 
             clientConnection.send(res.toString());
 
@@ -87,36 +87,36 @@ public class ClientHandler extends Thread
 
             case Constants.LOGIN:
 
-                userController.loginUser(request.getString("username"), request.getString("password"));
+                userController.loginUser(request.getString("username"), request.getString("password"), request.getString("token"));
                 return;
 
             case Constants.LIST:
                 fileSystemController.listFiles();
 
                 return;
-            case Constants.DOWNLOAD:
-                // Example: DOWNLOAD indexOfFile
-
-                fileSystemController.getFileName(1);
-                return;
-
-            case Constants.START_SENDING:
-                // for starting the sending of file when server receives confirmation from "DOWNLOAD"
-
-                fileSystemController.sendFile("1");
-
-                return;
-            case Constants.UPLOAD:
-                // Example: UPLOAD fileName
-
-                fileSystemController.receiveFile("argument");
-
-                return;
-            case Constants.DELETE:
-                // Example: DELETE indexOfFile
-
-                fileSystemController.deleteFile(1);
-                return;
+            //            case Constants.DOWNLOAD:
+            //                // Example: DOWNLOAD indexOfFile
+            //
+            //                fileSystemController.getFileName(1);
+            //                return;
+            //
+            //            case Constants.START_SENDING:
+            //                // for starting the sending of file when server receives confirmation from "DOWNLOAD"
+            //
+            //                fileSystemController.sendFile("1");
+            //
+            //                return;
+            //            case Constants.UPLOAD:
+            //                // Example: UPLOAD fileName
+            //
+            //                fileSystemController.receiveFile("argument");
+            //
+            //                return;
+            //            case Constants.DELETE:
+            //                // Example: DELETE indexOfFile
+            //
+            //                fileSystemController.deleteFile(1);
+            //                return;
 
             default:
                 System.out.println(Constants.SERVER + Constants.INVALID_INPUT);

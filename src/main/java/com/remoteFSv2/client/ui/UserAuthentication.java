@@ -63,9 +63,7 @@ public class UserAuthentication
                         if(userHandler.authenticateUser(Constants.LOGIN, username, password))
                         {
 
-                            var fileSystemClient = new FileSystem(userHandler);
-
-                            var fileManagerUI = new FileManager(fileSystemClient, socket);
+                            var fileManagerUI = new FileManager(username);
 
                             fileManagerUI.start();
 
@@ -80,9 +78,9 @@ public class UserAuthentication
 
                         userHandler = new User(socket);
 
-                        System.out.println("--------------------");
+                        System.out.println("-----------------------");
                         System.out.println("\t\tRegister");
-                        System.out.println("--------------------");
+                        System.out.println("-----------------------");
 
                         username = userInput("username");
 
@@ -92,14 +90,7 @@ public class UserAuthentication
 
                             if(password.length() >= 6)
                             {
-                                if(userHandler.authenticateUser(Constants.REGISTER, username, password))
-                                {
-                                    System.out.println(Constants.CLIENT + Constants.REGISTRATION_SUCCESS);
-                                }
-                                else
-                                {
-                                    System.out.println(Constants.CLIENT + Constants.REGISTRATION_ERROR);
-                                }
+                                userHandler.authenticateUser(Constants.REGISTER, username, password);
 
                                 userHandler.close();
                             }
@@ -130,13 +121,11 @@ public class UserAuthentication
 
             } catch(JSONException jsonException)
             {
-                System.out.println(Constants.CLIENT + "Response is in improper format!");
+                System.out.println(Constants.CLIENT + Constants.IMPROPER_JSON);
 
             } catch(IOException e)
             {
-                System.out.println("IOException: " + e.getMessage());
-
-                System.out.println("Server disconnected. Exiting client...");
+                System.out.println(Constants.CLIENT + Constants.IO_ERROR);
 
                 break;
 

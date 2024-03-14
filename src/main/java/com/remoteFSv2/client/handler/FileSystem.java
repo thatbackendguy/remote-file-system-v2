@@ -1,127 +1,138 @@
 package com.remoteFSv2.client.handler;
 
 import com.remoteFSv2.client.Config;
+import com.remoteFSv2.utils.Constants;
+import org.json.JSONObject;
 
 import java.io.*;
+import java.net.Socket;
 import java.nio.file.*;
 
-public class FileSystem
+public class FileSystem implements Closeable
 {
 
+    private JSONObject request = new JSONObject();
 
-    private final User userHandler;
+    private final String username;
 
-    public FileSystem(User userHandler)
+    private final Socket socket;
+
+    public final BufferedReader reader;
+
+    public final PrintWriter writer;
+
+    public FileSystem(String username, Socket socket) throws IOException
     {
-        this.userHandler = userHandler;
+        this.username = username;
+
+        this.socket = socket;
+
+        this.reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+        this.writer = new PrintWriter(socket.getOutputStream(), true);
     }
 
-    public void listFiles()
+    public void listFiles() throws IOException
     {
-        try
+
+        request.clear();
+
+        request.put("username", username);
+        request.put("command", Constants.LIST);
+
+        writer.println(request.toString());
+        var response = reader.readLine();
+
+        var resJSON = new JSONObject(response);
+
+        if(resJSON.getInt("status") == 0)
         {
-            var response = userHandler.sendRequest("LIST");
-            if(response.equals("null"))
+            System.out.println(resJSON.get("files"));
+        }
+        else
+        {
+            System.out.println(Constants.CLIENT + Constants.EMPTY_DIRECTORY);
+        }
+
+
+    }
+
+    public void reqDownloadFile(String fileChoice) throws IOException
+    {
+        request.clear();
+
+        request.put("username", username);
+        request.put("command", Constants.DOWNLOAD);
+
+        writer.println(request.toString());
+        var response = reader.readLine();
+
+        var resJSON = new JSONObject(response);
+
+        if(response.equals("null"))
+        {
+            throw new IOException();
+        }
+        var command = response.split(" ", 2)[0]; // "START_RECEIVING" command
+
+        if(command.equals("START_RECEIVING"))
+        {
+            var argument = response.split(" ", 2)[1]; // FILE-NAME
+
+            if(receiveFileFromServer(argument))
             {
-                throw new IOException();
-            }
-            else if(response.equals("{}"))
-            {
-                System.out.println("[Client] Remote server directory is empty! Please upload files...");
+                System.out.println("[Client] File downloaded successfully!");
+
+                reader.readLine();
+
             }
             else
             {
-                System.out.println(response);
+                System.out.println("[Client] Error! File not received properly!");
             }
-
-        } catch(NullPointerException | IOException e)
-        {
-            System.out.println("[Client] Server is down!");
         }
+        else
+        {
+            System.out.println("[Client] File not found on server!");
+        }
+
+
     }
 
-    public void reqDownloadFile(String fileChoice)
+    public boolean receiveFileFromServer(String fileName) throws IOException
     {
-        try
+        request.clear();
+
+        request.put("username", username);
+        request.put("command", Constants.START_SENDING);
+        request.put("fileName", fileName.trim());
+
+        writer.println(request.toString());
+
+
+        var bytes = 0;
+
+        var dataInputStream = new DataInputStream(socket.getInputStream());
+
+        var fileOutputStream = new FileOutputStream(Config.ROOT_DIR_CLIENT + fileName);
+
+        // read file size
+        var size = dataInputStream.readLong();
+
+        var buffer = new byte[8192]; // 8KB
+
+        while(size > 0 && (bytes = dataInputStream.read(buffer, 0, (int) Math.min(buffer.length, size))) != -1)
         {
-            var response = userHandler.sendRequest("DOWNLOAD " + fileChoice);
-            if(response.equals("null"))
-            {
-                throw new IOException();
-            }
-            var command = response.split(" ", 2)[0]; // "START_RECEIVING" command
+            // Here we write the file using write method
+            fileOutputStream.write(buffer, 0, bytes);
 
-            if(command.equals("START_RECEIVING"))
-            {
-                var argument = response.split(" ", 2)[1]; // FILE-NAME
-
-                if(receiveFileFromServer(argument))
-                {
-                    System.out.println("[Client] File downloaded successfully!");
-
-                    userHandler.reader.readLine();
-
-                }
-                else
-                {
-                    System.out.println("[Client] Error! File not received properly!");
-                }
-            }
-            else
-            {
-                System.out.println("[Client] File not found on server!");
-            }
-
-        } catch(NullPointerException npe)
-        {
-            System.out.println("[Client] Server is down!");
-        } catch(IOException e)
-        {
-            System.out.println("[Client] Error downloading files from server!");
+            size -= bytes; // read upto file size
         }
-    }
 
-    public boolean receiveFileFromServer(String fileName)
-    {
-        userHandler.writer.println("START_SENDING " + fileName.trim());
+        fileOutputStream.close();
 
-        try
-        {
-            var bytes = 0;
+        return true;
 
-            var dataInputStream = new DataInputStream(userHandler.socket.getInputStream());
-
-            var fileOutputStream = new FileOutputStream(Config.ROOT_DIR_CLIENT + fileName);
-
-            // read file size
-            var size = dataInputStream.readLong();
-
-            var buffer = new byte[8192]; // 8KB
-
-            while(size > 0 && (bytes = dataInputStream.read(buffer, 0, (int) Math.min(buffer.length, size))) != -1)
-            {
-                // Here we write the file using write method
-                fileOutputStream.write(buffer, 0, bytes);
-
-                size -= bytes; // read upto file size
-            }
-
-            fileOutputStream.close();
-
-            return true;
-
-        } catch(NullPointerException npe)
-        {
-            System.out.println("[Client] Server is down!");
-
-            return false;
-
-        } catch(IOException e)
-        {
-            System.out.println("[Client] Error in receiving file from server...\nError: " + e.getMessage());
-
-            return false;
-        }
     }
 
 
@@ -135,11 +146,11 @@ public class FileSystem
         {
             try
             {
-                userHandler.writer.println("UPLOAD " + fileName);
+                writer.println("UPLOAD " + fileName);
 
                 var file = new File(localPath);
 
-                var dataOutputStream = new DataOutputStream(userHandler.socket.getOutputStream());
+                var dataOutputStream = new DataOutputStream(socket.getOutputStream());
 
                 FileInputStream fileInputStream = new FileInputStream(file);
 
@@ -162,7 +173,7 @@ public class FileSystem
                 // close the file here
                 fileInputStream.close();
 
-                userHandler.reader.readLine();
+                reader.readLine();
 
                 return true;
 
@@ -196,11 +207,20 @@ public class FileSystem
     }
 
 
-    public void deleteFile(String fileChoice)
+    public void deleteFile(String fileName)
     {
         try
         {
-            var response = userHandler.sendRequest("DELETE " + fileChoice);
+            request.clear();
+
+            request.put("username", username);
+            request.put("command", Constants.DELETE);
+            request.put("fileName",fileName);
+
+            writer.println(request.toString());
+            var response = reader.readLine();
+
+            var resJSON = new JSONObject(response);
 
             if(response.equals("null"))
             {
@@ -213,5 +233,14 @@ public class FileSystem
         {
             System.out.println("[Client] Server is down!");
         }
+    }
+
+    public void close() throws IOException
+    {
+        reader.close(); // Close input stream
+
+        writer.close(); // Close output stream
+
+        socket.close(); // Close socket connection
     }
 }
