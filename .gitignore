@@ -148,4 +148,6 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+resources
 >>>>>>> 985eec0 (Initial Commit (IDEA))
