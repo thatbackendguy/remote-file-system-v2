@@ -13,7 +13,6 @@ import java.util.Scanner;
 
 public class UserAuthentication
 {
-    private Scanner sc = new Scanner(System.in);
 
     private Socket socket = null;
 
@@ -26,6 +25,8 @@ public class UserAuthentication
         System.out.println("Welcome to the Remote File System!");
         while(true)
         {
+            Scanner sc = new Scanner(System.in);
+
             System.out.println("--------------------");
             System.out.println("\t\tMenu");
             System.out.println("--------------------");
@@ -54,10 +55,10 @@ public class UserAuthentication
                         System.out.println("--------------------");
 
                         System.out.print("Enter username: ");
-                        username = userHandler.reader.readLine();
+                        username = sc.next();
 
                         System.out.print("Enter password: ");
-                        password = userHandler.reader.readLine();
+                        password = sc.next();
 
                         if(userHandler.authenticateUser(Constants.LOGIN, username, password))
                         {
@@ -91,7 +92,7 @@ public class UserAuthentication
 
                             if(password.length() >= 6)
                             {
-                                if(userHandler.authenticateUser(Constants.LOGIN, username, password))
+                                if(userHandler.authenticateUser(Constants.REGISTER, username, password))
                                 {
                                     System.out.println(Constants.CLIENT + Constants.REGISTRATION_SUCCESS);
                                 }
@@ -142,9 +143,6 @@ public class UserAuthentication
             } catch(NumberFormatException numberFormatException)
             {
                 System.out.println(Constants.INVALID_INPUT + " Valid range = [0-2]");
-            } finally
-            {
-                userHandler.close();
             }
         }
 
@@ -152,6 +150,7 @@ public class UserAuthentication
 
     public String userInput(String identity)
     {
+        Scanner sc = new Scanner(System.in);
         var input = "";
         for(int chance = 0; chance < 3; chance++)
         {
@@ -161,13 +160,15 @@ public class UserAuthentication
 
             if(input.length() >= 6)
             {
-                return input;
+
+                break;
             }
             else
             {
                 System.out.println(identity + " length should be >= 6!");
             }
         }
-        return "";
+
+        return input;
     }
 }

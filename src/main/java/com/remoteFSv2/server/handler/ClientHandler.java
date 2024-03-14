@@ -50,9 +50,9 @@ public class ClientHandler extends Thread
             // send response that received json is improper format
             var res = new JSONObject();
 
-            res.put("status","1");
+            res.put("status", "1");
 
-            res.put("message","Request improper format!");
+            res.put("message", "Request improper format!");
 
             clientConnection.send(res.toString());
 
@@ -76,50 +76,50 @@ public class ClientHandler extends Thread
 
     private void processRequest(JSONObject request)
     {
-            var command = request.getString("command");
+        var command = request.getString("command");
 
-            switch(command)
-            {
-                case Constants.REGISTER:
+        switch(command)
+        {
+            case Constants.REGISTER:
 
-                    userController.registerUser(request.getString("username"), request.getString("password"));
+                userController.registerUser(request.getString("username"), request.getString("password"));
+                return;
 
+            case Constants.LOGIN:
 
-                case Constants.LOGIN:
+                userController.loginUser(request.getString("username"), request.getString("password"));
+                return;
 
-                    userController.loginUser(request.getString("username"), request.getString("password"));
+            case Constants.LIST:
+                fileSystemController.listFiles();
 
+                return;
+            case Constants.DOWNLOAD:
+                // Example: DOWNLOAD indexOfFile
 
-                case Constants.LIST:
-                    fileSystemController.listFiles();
+                fileSystemController.getFileName(1);
+                return;
 
+            case Constants.START_SENDING:
+                // for starting the sending of file when server receives confirmation from "DOWNLOAD"
 
-                case Constants.DOWNLOAD:
-                    // Example: DOWNLOAD indexOfFile
+                fileSystemController.sendFile("1");
 
-                    fileSystemController.getFileName(1);
+                return;
+            case Constants.UPLOAD:
+                // Example: UPLOAD fileName
 
+                fileSystemController.receiveFile("argument");
 
-                case Constants.START_SENDING:
-                    // for starting the sending of file when server receives confirmation from "DOWNLOAD"
+                return;
+            case Constants.DELETE:
+                // Example: DELETE indexOfFile
 
-                    fileSystemController.sendFile("1");
+                fileSystemController.deleteFile(1);
+                return;
 
-
-                case Constants.UPLOAD:
-                    // Example: UPLOAD fileName
-
-                    fileSystemController.receiveFile("argument");
-
-
-                case Constants.DELETE:
-                    // Example: DELETE indexOfFile
-
-                    fileSystemController.deleteFile(1);
-
-
-                default:
-                    System.out.println(Constants.SERVER + Constants.INVALID_INPUT);
-            }
+            default:
+                System.out.println(Constants.SERVER + Constants.INVALID_INPUT);
+        }
     }
 }
