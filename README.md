@@ -13,7 +13,7 @@ remote-file-system/
            │   │   └── FileSystem.java             // Functions for File System Managment
            │   │   └── User.java                   // Functions for User Managment
            │   └── handler/
-           │       ├── ClientHandler.java          // Thread/process to handle client requests
+           │       ├── Client.java          // Thread/process to handle client requests
            │       └── ClientConnection.java       // Represents a client connection
            │
            └── client/
@@ -24,6 +24,6 @@ remote-file-system/
                │   └── UserAuthentication.java
                └── handler/
                    ├── ServerConnection.java       // Handles client requests and communication
-                   └── FileSystemClient.java       // Manages file system requests
-                   └── UserHandlerClient.java      // Manages user level requests
+                   └── FileSystem.java       // Manages file system requests
+                   └── User.java      // Manages user level requests
 ```
