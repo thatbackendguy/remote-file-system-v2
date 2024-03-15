@@ -27,7 +27,7 @@ public class FileSystem
         this.rootDirectory = rootDirectory;
     }
 
-    public void listFiles(String token)
+    public void listFiles(String token, String currPath)
     {
         response.clear();
 
@@ -37,11 +37,20 @@ public class FileSystem
         {
             try
             {
-                var directory = Paths.get(rootDirectory + username + "/");
+                var directory = Paths.get(rootDirectory ,username,currPath);
 
                 var files = new ArrayList<String>();
 
-                Files.list(directory).forEach(path -> files.add(path.getFileName().toString()));
+                Files.list(directory).forEach(path -> {
+                    if(Files.isDirectory(path))
+                    {
+                        files.add(path.getFileName().toString() + "/");
+                    }
+                    else
+                    {
+                        files.add(path.getFileName().toString());
+                    }
+                });
 
                 if(!files.isEmpty())
                 {
@@ -315,7 +324,7 @@ public class FileSystem
         clientConnection.send(response.toString());
     }
 
-    public void changeDirectory(String token, String dirName)
+    public void changeDirectory(String token, String destPath, String currPath)
     {
         response.clear();
 
@@ -323,28 +332,78 @@ public class FileSystem
 
         if(username != null)
         {
+            var dirPath = Paths.get(rootDirectory, username, currPath, destPath);
+
+            if(Files.isDirectory(dirPath) && Files.exists(dirPath))
+            {
+                var resDirPath = Paths.get(currPath,destPath);
+
+                response.put(Constants.STATUS_CODE, 0);
+
+                response.put(Constants.CURRENT_DIR_PATH,String.valueOf(resDirPath));
+            }
+            else
+            {
+                response.clear();
+
+                response.put(Constants.STATUS_CODE, 1);
+
+                response.put(Constants.MESSAGE, Constants.SERVER + Constants.INVALID_PATH);
+            }
+
 
         }
         else
         {
-            // error response
+            response.put(Constants.STATUS_CODE, 1);
+
+            response.put(Constants.MESSAGE, Constants.SERVER + Constants.UNAUTHORIZED_ACCESS);
+
         }
+
+        clientConnection.send(response.toString());
     }
 
-    public void goBackOneDir(String token, String dirName)
-    {
-        response.clear();
-
-        var username = JWTUtil.verifyToken(token);
-
-        if(username != null)
-        {
-
-        }
-        else
-        {
-            // error response
-        }
-    }
+//    public void goBackOneDir(String token, String currPath)
+//    {
+//        response.clear();
+//
+//        var username = JWTUtil.verifyToken(token);
+//
+//        if(username != null)
+//        {
+//            var dirPath = Paths.get(rootDirectory, username, currPath);
+//
+//            if(Files.isDirectory(dirPath) && Files.exists(dirPath))
+//            {
+//                var parentPath = dirPath.getParent();
+//
+//                var resDirPath = Paths.get(currPath,destPath);
+//
+//                response.put(Constants.STATUS_CODE, 0);
+//
+//                response.put(Constants.CURRENT_DIR_PATH,String.valueOf(resDirPath));
+//            }
+//            else
+//            {
+//                response.clear();
+//
+//                response.put(Constants.STATUS_CODE, 1);
+//
+//                response.put(Constants.MESSAGE, Constants.SERVER + Constants.INVALID_PATH);
+//            }
+//
+//
+//        }
+//        else
+//        {
+//            response.put(Constants.STATUS_CODE, 1);
+//
+//            response.put(Constants.MESSAGE, Constants.SERVER + Constants.UNAUTHORIZED_ACCESS);
+//
+//        }
+//
+//        clientConnection.send(response.toString());
+//    }
 
 }

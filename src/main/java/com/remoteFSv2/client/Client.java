@@ -151,9 +151,6 @@ public class Client
             {
                 System.out.println(Constants.INVALID_INPUT + " Valid range = [0-2]");
             }
-
-            System.out.println();
-            System.out.println();
         }
 
     }
@@ -353,26 +350,32 @@ public class Client
 
                         fileSystem = new FileSystem(User.userData.get(username), socket);
 
-                        fileSystem.listFiles();
+                        System.out.print("Enter folder name/path or (0) to exit: ");
 
-                        // enter code here
+                        input = sc.nextLine();
 
+                        if(input.equals("0"))
+                        {
+                            fileSystem.close();
+
+                            break;
+                        }
+                        else
+                        {
+                            fileSystem.changeDirectory(input, currPath);
+                        }
 
                         fileSystem.close();
+
                         break;
 
                     case Constants.BACK:
-
-                        socket = clientSocket.connectServer();
-
-                        fileSystem = new FileSystem(User.userData.get(username), socket);
-
-                        fileSystem.listFiles();
-
-                        // enter code here
-
-
-                        fileSystem.close();
+                        if(!currPath.equals("/"))
+                        {
+                            currPath = String.valueOf(Path.of(currPath).getParent());
+                        } else {
+                            System.out.println(Constants.SERVER + "Already in root folder!");
+                        }
 
                         break;
 
@@ -389,26 +392,27 @@ public class Client
             } catch(NullPointerException npe)
             {
                 System.out.println(Constants.CLIENT + Constants.SERVER_DOWN);
+
                 break;
 
             } catch(IOException e)
             {
                 System.out.println(Constants.CLIENT + Constants.CONNECTION_ERROR);
+
                 break;
 
             } catch(NumberFormatException nfe)
             {
                 System.out.println(Constants.CLIENT + "Error: " + nfe.getMessage());
+
                 break;
 
             } catch(JSONException jsonException)
             {
                 System.out.println(Constants.CLIENT + Constants.IMPROPER_JSON);
+
                 break;
             }
-
-            System.out.println();
-            System.out.println();
         }
 
     }

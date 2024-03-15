@@ -94,7 +94,7 @@ public class ClientHandler extends Thread
 
             case Constants.LIST:
 
-                fileSystemController.listFiles(request.getString(Constants.TOKEN));
+                fileSystemController.listFiles(request.getString(Constants.TOKEN), request.getString(Constants.CURRENT_DIR_PATH));
 
                 return;
             //            case Constants.DOWNLOAD:
@@ -136,13 +136,7 @@ public class ClientHandler extends Thread
 
             case Constants.CD:
 
-                fileSystemController.changeDirectory(request.getString(Constants.TOKEN), request.getString(Constants.DIR_NAME));
-
-                return;
-
-            case Constants.BACK:
-
-                fileSystemController.goBackOneDir(request.getString(Constants.TOKEN), request.getString(Constants.DIR_NAME));
+                fileSystemController.changeDirectory(request.getString(Constants.TOKEN), request.getString(Constants.DEST_PATH), request.getString(Constants.CURRENT_DIR_PATH));
 
                 return;
 

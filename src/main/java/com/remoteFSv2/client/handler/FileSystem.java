@@ -1,5 +1,6 @@
 package com.remoteFSv2.client.handler;
 
+import com.remoteFSv2.client.Client;
 import com.remoteFSv2.utils.Config;
 import com.remoteFSv2.utils.Constants;
 import org.json.JSONObject;
@@ -40,9 +41,13 @@ public class FileSystem implements Closeable
         request.clear();
 
         request.put(Constants.TOKEN, token);
+
+        request.put(Constants.CURRENT_DIR_PATH, Client.currPath);
+
         request.put(Constants.COMMAND, Constants.LIST);
 
         writer.println(request.toString());
+
         var response = reader.readLine();
 
         var resJSON = new JSONObject(response);
@@ -266,13 +271,35 @@ public class FileSystem implements Closeable
 
         var resJSON = new JSONObject(response);
 
+        System.out.println(resJSON.get(Constants.MESSAGE));
+
+    }
+
+    public void changeDirectory(String destPath, String currPath) throws IOException
+    {
+        request.clear();
+
+        request.put(Constants.TOKEN, token);
+
+        request.put(Constants.DEST_PATH, destPath);
+
+        request.put(Constants.CURRENT_DIR_PATH, currPath);
+
+        request.put(Constants.COMMAND, Constants.CD);
+
+        writer.println(request.toString());
+
+        var response = reader.readLine();
+
+        var resJSON = new JSONObject(response);
+
         if(resJSON.getInt(Constants.STATUS_CODE) == 0)
         {
-            System.out.println(resJSON.get(Constants.MESSAGE));
+            Client.currPath = resJSON.getString(Constants.CURRENT_DIR_PATH);
         }
         else
         {
-            System.out.println(resJSON.getString(Constants.MESSAGE));
+            System.out.println(resJSON.get(Constants.MESSAGE));
         }
     }
 

@@ -58,6 +58,8 @@ public class Constants
 
     public static final String CURRENT_DIR_PATH = "currPath";
 
+    public static final String DEST_PATH = "destPath";
+
 
     // Login Messages
     public static final String USER_NOT_FOUND = "User doesn't exists!";
