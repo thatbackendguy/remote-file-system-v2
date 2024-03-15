@@ -7,6 +7,8 @@ import org.json.JSONObject;
 import java.io.*;
 import java.net.Socket;
 import java.nio.file.*;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 public class FileSystem implements Closeable
 {
@@ -32,29 +34,31 @@ public class FileSystem implements Closeable
         this.writer = new PrintWriter(socket.getOutputStream(), true);
     }
 
-    public void listFiles() throws IOException
+    public boolean listFiles() throws IOException
     {
 
         request.clear();
 
         request.put(Constants.TOKEN, token);
-        request.put("command", Constants.LIST);
+        request.put(Constants.COMMAND, Constants.LIST);
 
         writer.println(request.toString());
         var response = reader.readLine();
 
         var resJSON = new JSONObject(response);
 
-        if(resJSON.getInt("status") == 0)
+        if(resJSON.getInt(Constants.STATUS_CODE) == 0)
         {
             System.out.println(resJSON.get("files"));
+
+            return true;
         }
         else
         {
-            System.out.println(resJSON.getString("message"));
+            System.out.println(resJSON.getString(Constants.MESSAGE));
+
+            return false;
         }
-
-
     }
 
     public void reqDownloadFile(String fileChoice) throws IOException
@@ -62,7 +66,7 @@ public class FileSystem implements Closeable
         request.clear();
 
         request.put(Constants.TOKEN, token);
-        request.put("command", Constants.DOWNLOAD);
+        request.put(Constants.COMMAND, Constants.DOWNLOAD);
 
         writer.println(request.toString());
         var response = reader.readLine();
@@ -104,8 +108,8 @@ public class FileSystem implements Closeable
         request.clear();
 
         request.put(Constants.TOKEN, token);
-        request.put("command", Constants.START_SENDING);
-        request.put("fileName", fileName.trim());
+        request.put(Constants.COMMAND, Constants.START_SENDING);
+        request.put(Constants.FILE_NAME, fileName.trim());
 
         writer.println(request.toString());
 
@@ -214,26 +218,64 @@ public class FileSystem implements Closeable
             request.clear();
 
             request.put(Constants.TOKEN, token);
-            request.put("command", Constants.DELETE);
-            request.put("fileName",fileName);
+            request.put(Constants.COMMAND, Constants.DELETE);
+            request.put(Constants.FILE_NAME, fileName);
 
             writer.println(request.toString());
             var response = reader.readLine();
 
             var resJSON = new JSONObject(response);
 
-            if(response.equals("null"))
+            if(resJSON.getInt(Constants.STATUS_CODE) == 0) // success
+            {
+                System.out.println(resJSON.getString(Constants.MESSAGE));
+            }
+            else if(resJSON.getInt(Constants.STATUS_CODE) == 1) // failed
+            {
+                System.out.println(resJSON.getString(Constants.MESSAGE));
+            }
+            else
             {
                 throw new IOException();
             }
-
-            System.out.println(response);
-
         } catch(IOException | NullPointerException e)
         {
-            System.out.println("[Client] Server is down!");
+            System.out.println(Constants.CLIENT + Constants.CONNECTION_ERROR);
         }
     }
+
+
+    public void makeOrRemoveDir(String command, String dirName, String currPath) throws IOException
+    {
+        request.clear();
+
+        request.put(Constants.TOKEN, token);
+
+        if(Objects.equals(command, Constants.MKDIR))
+            request.put(Constants.COMMAND, Constants.MKDIR);
+        else
+            request.put(Constants.COMMAND, Constants.RMDIR);
+
+        request.put(Constants.DIR_NAME, dirName);
+
+        request.put(Constants.CURRENT_DIR_PATH, currPath);
+
+        writer.println(request.toString());
+
+        var response = reader.readLine();
+
+        var resJSON = new JSONObject(response);
+
+        if(resJSON.getInt(Constants.STATUS_CODE) == 0)
+        {
+            System.out.println(resJSON.get(Constants.MESSAGE));
+        }
+        else
+        {
+            System.out.println(resJSON.getString(Constants.MESSAGE));
+        }
+    }
+
 
     public void close() throws IOException
     {
@@ -243,4 +285,5 @@ public class FileSystem implements Closeable
 
         socket.close(); // Close socket connection
     }
+
 }

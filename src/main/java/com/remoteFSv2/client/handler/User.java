@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.nio.file.Path;
 import java.util.HashMap;
 
 public class User
@@ -41,8 +42,11 @@ public class User
             request.clear();
 
             request.put(Constants.COMMAND, Constants.LOGIN);
+
             request.put("username", username.trim());
+
             request.put("password", password.trim());
+
             request.put(Constants.TOKEN, userData.getOrDefault(username, ""));
 
             var response = sendRequest(request.toString());
@@ -73,7 +77,9 @@ public class User
             request.clear();
 
             request.put(Constants.COMMAND, Constants.REGISTER);
+
             request.put("username", username.trim());
+
             request.put("password", password.trim());
 
             var response = sendRequest(request.toString());

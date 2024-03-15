@@ -1,6 +1,7 @@
 package com.remoteFSv2.server.controller;
 
 import com.remoteFSv2.server.handler.ClientConnection;
+import com.remoteFSv2.utils.Common;
 import com.remoteFSv2.utils.Constants;
 import com.remoteFSv2.utils.JWTUtil;
 import org.json.JSONObject;
@@ -13,7 +14,6 @@ import java.util.concurrent.atomic.*;
 
 public class FileSystem
 {
-    //    static Map<Integer, String> fileMap = new HashMap<>();
     private JSONObject response = new JSONObject();
 
     private final String rootDirectory; // Root directory of the file system
@@ -29,38 +29,41 @@ public class FileSystem
 
     public void listFiles(String token)
     {
-        try
+        response.clear();
+
+        String username = JWTUtil.verifyToken(token);
+
+        if(username != null)
         {
-            String username = JWTUtil.verifyToken(token);
-
-            var directory = Paths.get(rootDirectory + username + "/");
-
-            Files.createDirectories(directory);
-
-            var counter = new AtomicInteger(0);
-
-            var files = new JSONObject();
-            Files.list(directory).forEach(path -> {
-                files.put(String.valueOf(counter.incrementAndGet()), path.getFileName().toString());
-            });
-
-            if(!files.isEmpty())
+            try
             {
-                response.put("files", files);
-                response.put(Constants.STATUS_CODE, 0);
-            }
-            else
+                var directory = Paths.get(rootDirectory + username + "/");
+
+                var files = new ArrayList<String>();
+
+                Files.list(directory).forEach(path -> files.add(path.getFileName().toString()));
+
+                if(!files.isEmpty())
+                {
+                    response.put("files", files);
+
+                    response.put(Constants.STATUS_CODE, 0);
+                }
+                else
+                {
+                    response.put(Constants.MESSAGE, Constants.SERVER + Constants.EMPTY_DIRECTORY);
+
+                    response.put(Constants.STATUS_CODE, 1);
+                }
+
+                clientConnection.send(response.toString());
+
+            } catch(IOException e)
             {
-                response.put(Constants.MESSAGE, Constants.SERVER + Constants.EMPTY_DIRECTORY);
-                response.put(Constants.STATUS_CODE, 1);
+                System.out.println(Constants.SERVER + "Error listing files!" + e.getMessage());
             }
-
-            clientConnection.send(response.toString());
-
-        } catch(IOException e)
-        {
-            System.out.println("[Server] Error listing files: " + e.getMessage());
         }
+
 
     }
 
@@ -159,35 +162,189 @@ public class FileSystem
     //        }
     //    }
     //
-    //    public void deleteFile(int fileIndex)
-    //    {
-    //        try
-    //        {
-    //            if(fileMap.containsKey(fileIndex))
-    //            {
-    //                var file = Paths.get(rootDirectory, fileMap.get(fileIndex));
-    //
-    //                Files.deleteIfExists(file);
-    //
-    //                fileMap.remove(fileIndex);
-    //
-    //                return true;
-    //            }
-    //            else
-    //            {
-    //                return false;
-    //            }
-    //
-    //        } catch(NullPointerException npe)
-    //        {
-    //            System.out.println("[Server] Server is down!");
-    //
-    //            return false;
-    //        }catch(IOException e)
-    //        {
-    //            System.out.println("[Server] Error deleting file: " + e.getMessage());
-    //
-    //            return false;
-    //        }
-    //    }
+
+    public void deleteFile(String token, String fileName)
+    {
+        response.clear();
+
+        try
+        {
+            var username = JWTUtil.verifyToken(token);
+
+            if(username != null)
+            {
+                var file = Paths.get(rootDirectory, username, fileName);
+
+                if(Common.validateFilePath(file))
+                {
+                    Files.deleteIfExists(file);
+
+                    response.put(Constants.STATUS_CODE, 0);
+
+                    response.put(Constants.MESSAGE, Constants.SERVER + Constants.FILE_DELETE_SUCCESS);
+
+                }
+                else
+                {
+                    System.out.println(Constants.SERVER + Constants.FILE_NOT_FOUND);
+
+                    response.put(Constants.STATUS_CODE, 1);
+
+                    response.put(Constants.MESSAGE, Constants.SERVER + Constants.FILE_NOT_FOUND);
+                }
+            }
+            else
+            {
+                response.put(Constants.STATUS_CODE, 1);
+
+                response.put(Constants.MESSAGE, Constants.SERVER + Constants.UNAUTHORIZED_ACCESS);
+
+            }
+
+        } catch(IOException e)
+        {
+            response.put(Constants.STATUS_CODE, 1);
+
+            response.put(Constants.MESSAGE, Constants.SERVER + Constants.FILE_DELETE_ERROR);
+
+            System.out.println(Constants.SERVER + Constants.FILE_DELETE_ERROR + e.getMessage());
+        }
+
+        clientConnection.send(response.toString());
+    }
+
+    public void makeDirectory(String token, String dirName, String currPath)
+    {
+        response.clear();
+
+        var username = JWTUtil.verifyToken(token);
+
+        if(username != null)
+        {
+            var dirPath = Paths.get(rootDirectory, username, currPath, dirName);
+
+            try
+            {
+                Files.createDirectory(dirPath);
+
+                response.put(Constants.STATUS_CODE, 0);
+
+                response.put(Constants.MESSAGE, Constants.SERVER + Constants.MKDIR_SUCCESS);
+
+            } catch(FileAlreadyExistsException e)
+            {
+                response.clear();
+
+                response.put(Constants.STATUS_CODE, 1);
+
+                response.put(Constants.MESSAGE, Constants.SERVER + Constants.DIR_ALREADY_EXISTS);
+
+                clientConnection.send(response.toString());
+
+            } catch(IOException e)
+            {
+                // parent dir not exists
+                response.clear();
+
+                response.put(Constants.STATUS_CODE, 1);
+
+                response.put(Constants.MESSAGE, Constants.SERVER + Constants.INVALID_PATH);
+            }
+        }
+        else
+        {
+            response.put(Constants.STATUS_CODE, 1);
+
+            response.put(Constants.MESSAGE, Constants.SERVER + Constants.UNAUTHORIZED_ACCESS);
+
+        }
+
+        clientConnection.send(response.toString());
+    }
+
+    public void removeDirectory(String token, String dirName, String currPath)
+    {
+        response.clear();
+
+        var username = JWTUtil.verifyToken(token);
+
+        if(username != null)
+        {
+            var dirPath = Paths.get(rootDirectory, username, currPath, dirName);
+
+            if(Files.isDirectory(dirPath) && Files.exists(dirPath))
+            {
+                try
+                {
+                    Common.removeDirRecursively(String.valueOf(dirPath));
+
+                    response.put(Constants.STATUS_CODE, 0);
+
+                    response.put(Constants.MESSAGE, Constants.SERVER + Constants.DIR_DELETE_SUCCESS);
+
+                } catch(IOException e)
+                {
+                    // delete failed
+                    response.clear();
+
+                    response.put(Constants.STATUS_CODE, 1);
+
+                    response.put(Constants.MESSAGE, Constants.SERVER + Constants.DIR_DELETE_ERROR);
+                }
+            }
+            else
+            {
+                // delete failed
+                response.clear();
+
+                response.put(Constants.STATUS_CODE, 1);
+
+                response.put(Constants.MESSAGE, Constants.SERVER + Constants.DIR_DELETE_ERROR);
+            }
+
+
+        }
+        else
+        {
+            response.put(Constants.STATUS_CODE, 1);
+
+            response.put(Constants.MESSAGE, Constants.SERVER + Constants.UNAUTHORIZED_ACCESS);
+
+        }
+
+        clientConnection.send(response.toString());
+    }
+
+    public void changeDirectory(String token, String dirName)
+    {
+        response.clear();
+
+        var username = JWTUtil.verifyToken(token);
+
+        if(username != null)
+        {
+
+        }
+        else
+        {
+            // error response
+        }
+    }
+
+    public void goBackOneDir(String token, String dirName)
+    {
+        response.clear();
+
+        var username = JWTUtil.verifyToken(token);
+
+        if(username != null)
+        {
+
+        }
+        else
+        {
+            // error response
+        }
+    }
+
 }

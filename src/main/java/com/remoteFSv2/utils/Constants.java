@@ -52,9 +52,15 @@ public class Constants
 
     public static final String COMMAND = "command";
 
+    public static final String FILE_NAME = "fileName";
+
+    public static final String DIR_NAME = "dirName";
+
+    public static final String CURRENT_DIR_PATH = "currPath";
+
 
     // Login Messages
-    public static final String LOGIN_ERROR = "Login failed!";
+    public static final String USER_NOT_FOUND = "User doesn't exists!";
 
     public static final String JWT_INVALID = "Invalid JWT Token!";
 
@@ -64,6 +70,8 @@ public class Constants
 
     public static final String LOGIN_SUCCESS = "Login successful!";
 
+    public static final String UNAUTHORIZED_ACCESS = "Unauthorized access!";
+
     // File Transfer Messages
     public static final String FILE_TRANSFER_ERROR = "Error during file transfer!";
 
@@ -71,13 +79,20 @@ public class Constants
 
     public static final String FILE_UPLOAD_SUCCESS = "File uploaded successfully!";
 
+    public static final String DIR_ALREADY_EXISTS = "Directory already exists!";
+
+    public static final String FILE_ALREADY_EXISTS = "File already exists!";
+
     public static final String FILE_DOWNLOAD_ERROR = "Error downloading file!";
 
     public static final String FILE_DOWNLOAD_SUCCESS = "File downloaded successfully!";
 
     public static final String FILE_DELETE_ERROR = "Error deleting file!";
 
+    public static final String DIR_DELETE_ERROR = "Error deleting directory!";
+
     public static final String FILE_DELETE_SUCCESS = "File deleted successfully!";
+    public static final String DIR_DELETE_SUCCESS = "Directory deleted successfully!";
 
 
     // Server Messages
@@ -111,9 +126,15 @@ public class Constants
 
     public static final String DIRECTORY_NOT_FOUND = "Directory not found!";
 
+    public static final String MKDIR_SUCCESS = "Directory created successfully!";
+
+    public static final String MKDIR_FAIL = "Directory failed to create!";
+
     public static final String EMPTY_DIRECTORY = "Directory is empty!";
 
     public static final String INVALID_FILE_CHOICE = "Invalid file choice!";
+
+    public static final String INVALID_PATH = "Invalid path!";
 
     // General Messages
     public static final String OPERATION_SUCCESSFUL = "Operation successful!";

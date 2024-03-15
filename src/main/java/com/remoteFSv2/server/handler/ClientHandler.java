@@ -83,14 +83,17 @@ public class ClientHandler extends Thread
             case Constants.REGISTER:
 
                 userController.registerUser(request.getString("username"), request.getString("password"));
+
                 return;
 
             case Constants.LOGIN:
 
                 userController.loginUser(request.getString("username"), request.getString("password"), request.getString(Constants.TOKEN));
+
                 return;
 
             case Constants.LIST:
+
                 fileSystemController.listFiles(request.getString(Constants.TOKEN));
 
                 return;
@@ -112,11 +115,36 @@ public class ClientHandler extends Thread
             //                fileSystemController.receiveFile("argument");
             //
             //                return;
-            //            case Constants.DELETE:
-            //                // Example: DELETE indexOfFile
-            //
-            //                fileSystemController.deleteFile(1);
-            //                return;
+
+            case Constants.DELETE:
+
+                fileSystemController.deleteFile(request.getString(Constants.TOKEN), request.getString(Constants.FILE_NAME));
+
+                return;
+
+            case Constants.MKDIR:
+
+                fileSystemController.makeDirectory(request.getString(Constants.TOKEN), request.getString(Constants.DIR_NAME), request.getString(Constants.CURRENT_DIR_PATH));
+
+                return;
+
+            case Constants.RMDIR:
+
+                fileSystemController.removeDirectory(request.getString(Constants.TOKEN), request.getString(Constants.DIR_NAME), request.getString(Constants.CURRENT_DIR_PATH));
+
+                return;
+
+            case Constants.CD:
+
+                fileSystemController.changeDirectory(request.getString(Constants.TOKEN), request.getString(Constants.DIR_NAME));
+
+                return;
+
+            case Constants.BACK:
+
+                fileSystemController.goBackOneDir(request.getString(Constants.TOKEN), request.getString(Constants.DIR_NAME));
+
+                return;
 
             default:
                 System.out.println(Constants.SERVER + Constants.INVALID_INPUT);
