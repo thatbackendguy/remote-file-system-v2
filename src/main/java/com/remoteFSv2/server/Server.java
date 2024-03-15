@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.concurrent.ThreadPoolExecutor;
 
+import com.remoteFSv2.utils.Config;
 import com.remoteFSv2.server.controller.FileSystem;
 import com.remoteFSv2.server.controller.User;
 import com.remoteFSv2.server.handler.ClientConnection;
@@ -22,11 +23,11 @@ public class Server
 
         try
         {
-            serverSocket = new ServerSocket(Config.PORT);
+            serverSocket = new ServerSocket(Config.SERVER_PORT);
 
-            System.out.println(Constants.SERVER + Constants.SERVER_START_SUCCESS + Config.PORT);
+            System.out.println(Constants.SERVER + Constants.SERVER_START_SUCCESS + Config.SERVER_PORT);
 
-            threadPoolExecutor = new ThreadPoolExecutor(Config.corePoolSize, Config.maximumPoolSize, Config.keepAliveTime, Config.unit, Config.workQueue);
+            threadPoolExecutor = new ThreadPoolExecutor(Config.CORE_POOL_SIZE, Config.MAXIMUM_POOL_SIZE, Config.KEEP_ALIVE_TIME, Config.UNIT, Config.WORKERS);
 
             while(true)
             {

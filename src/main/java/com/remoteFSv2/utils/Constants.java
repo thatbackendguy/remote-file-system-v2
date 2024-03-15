@@ -44,9 +44,23 @@ public class Constants
 
     public static final String REGISTRATION_SUCCESS = "Registration successful!";
 
+    // JSON KEYS
+
+    public static final String MESSAGE = "message";
+
+    public static final String STATUS_CODE = "status";
+
+    public static final String TOKEN = "token";
+
+    public static final String COMMAND = "command";
+
 
     // Login Messages
     public static final String LOGIN_ERROR = "Login failed!";
+
+    public static final String JWT_INVALID = "Invalid JWT Token!";
+
+    public static final String JWT_EMPTY = "JWT Token not found!";
 
     public static final String INVALID_CREDENTIALS = "Invalid username or password!";
 

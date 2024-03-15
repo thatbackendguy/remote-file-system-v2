@@ -76,7 +76,7 @@ public class ClientHandler extends Thread
 
     private void processRequest(JSONObject request)
     {
-        var command = request.getString("command");
+        var command = request.getString(Constants.COMMAND);
 
         switch(command)
         {
@@ -87,11 +87,11 @@ public class ClientHandler extends Thread
 
             case Constants.LOGIN:
 
-                userController.loginUser(request.getString("username"), request.getString("password"), request.getString("token"));
+                userController.loginUser(request.getString("username"), request.getString("password"), request.getString(Constants.TOKEN));
                 return;
 
             case Constants.LIST:
-                fileSystemController.listFiles();
+                fileSystemController.listFiles(request.getString(Constants.TOKEN));
 
                 return;
             //            case Constants.DOWNLOAD:

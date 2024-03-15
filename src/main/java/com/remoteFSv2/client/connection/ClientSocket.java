@@ -1,7 +1,7 @@
 package com.remoteFSv2.client.connection;
 
 import com.remoteFSv2.client.Client;
-import com.remoteFSv2.client.Config;
+import com.remoteFSv2.utils.Config;
 import com.remoteFSv2.utils.Constants;
 
 import java.io.IOException;
@@ -27,7 +27,7 @@ public class ClientSocket
     {
         try
         {
-            var socket = new Socket(Config.HOST,  Config.PORT);
+            var socket = new Socket(Config.HOST,  Config.CLIENT_PORT);
 
             return socket;
         }

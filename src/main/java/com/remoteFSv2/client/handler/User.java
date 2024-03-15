@@ -15,7 +15,7 @@ public class User
 {
     private JSONObject request = new JSONObject();
 
-    private static HashMap<String, String> userData = new HashMap<>();
+    public static HashMap<String, String> userData = new HashMap<>();
 
     public final Socket socket;
 
@@ -38,21 +38,21 @@ public class User
         {
             request.clear();
 
-            request.put("command", Constants.LOGIN);
+            request.put(Constants.COMMAND, Constants.LOGIN);
             request.put("username", username.trim());
             request.put("password", password.trim());
-            request.put("token", userData.getOrDefault(username, ""));
+            request.put(Constants.TOKEN, userData.getOrDefault(username, ""));
 
             var response = sendRequest(request.toString());
 
             JSONObject resJSON = new JSONObject(response);
 
-            if(resJSON.getInt("status") == 0)
+            if(resJSON.getInt(Constants.STATUS_CODE) == 0)
             {
 
-                userData.put(username, resJSON.getString("token"));
+                userData.put(username, resJSON.getString(Constants.TOKEN));
 
-                System.out.println(resJSON.getString("message"));
+                System.out.println(resJSON.getString(Constants.MESSAGE));
 
                 System.out.println(userData);
 
@@ -60,7 +60,7 @@ public class User
             }
             else
             {
-                System.out.println(resJSON.getString("message"));
+                System.out.println(resJSON.getString(Constants.MESSAGE));
 
                 return false;
             }
@@ -70,7 +70,7 @@ public class User
         {
             request.clear();
 
-            request.put("command", Constants.REGISTER);
+            request.put(Constants.COMMAND, Constants.REGISTER);
             request.put("username", username.trim());
             request.put("password", password.trim());
 
@@ -78,17 +78,17 @@ public class User
 
             JSONObject resJSON = new JSONObject(response);
 
-            if(resJSON.getInt("status") == 0)
+            if(resJSON.getInt(Constants.STATUS_CODE) == 0)
             {
-                System.out.println(resJSON.getString("message"));
+                System.out.println(resJSON.getString(Constants.MESSAGE));
 
-                userData.put(username, resJSON.getString("token"));
+                userData.put(username, resJSON.getString(Constants.TOKEN));
 
                 return true;
             }
             else
             {
-                System.out.println(resJSON.getString("message"));
+                System.out.println(resJSON.getString(Constants.MESSAGE));
 
                 return false;
             }

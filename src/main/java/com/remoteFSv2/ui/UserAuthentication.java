@@ -1,7 +1,6 @@
-package com.remoteFSv2.client.ui;
+package com.remoteFSv2.ui;
 
 import com.remoteFSv2.client.connection.ClientSocket;
-import com.remoteFSv2.client.handler.FileSystem;
 
 import com.remoteFSv2.client.handler.User;
 import com.remoteFSv2.utils.Constants;
@@ -9,6 +8,7 @@ import org.json.JSONException;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class UserAuthentication
@@ -62,7 +62,7 @@ public class UserAuthentication
 
                         if(userHandler.authenticateUser(Constants.LOGIN, username, password))
                         {
-
+                            userHandler.close();
                             var fileManagerUI = new FileManager(username);
 
                             fileManagerUI.start();
@@ -129,7 +129,7 @@ public class UserAuthentication
 
                 break;
 
-            } catch(NumberFormatException numberFormatException)
+            } catch(InputMismatchException | NumberFormatException numberFormatException)
             {
                 System.out.println(Constants.INVALID_INPUT + " Valid range = [0-2]");
             }

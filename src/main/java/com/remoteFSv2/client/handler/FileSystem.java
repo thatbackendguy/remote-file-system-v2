@@ -1,6 +1,6 @@
 package com.remoteFSv2.client.handler;
 
-import com.remoteFSv2.client.Config;
+import com.remoteFSv2.utils.Config;
 import com.remoteFSv2.utils.Constants;
 import org.json.JSONObject;
 
@@ -13,7 +13,7 @@ public class FileSystem implements Closeable
 
     private JSONObject request = new JSONObject();
 
-    private final String username;
+    private final String token;
 
     private final Socket socket;
 
@@ -21,9 +21,9 @@ public class FileSystem implements Closeable
 
     public final PrintWriter writer;
 
-    public FileSystem(String username, Socket socket) throws IOException
+    public FileSystem(String token, Socket socket) throws IOException
     {
-        this.username = username;
+        this.token = token;
 
         this.socket = socket;
 
@@ -37,7 +37,7 @@ public class FileSystem implements Closeable
 
         request.clear();
 
-        request.put("username", username);
+        request.put(Constants.TOKEN, token);
         request.put("command", Constants.LIST);
 
         writer.println(request.toString());
@@ -51,7 +51,7 @@ public class FileSystem implements Closeable
         }
         else
         {
-            System.out.println(Constants.CLIENT + Constants.EMPTY_DIRECTORY);
+            System.out.println(resJSON.getString("message"));
         }
 
 
@@ -61,7 +61,7 @@ public class FileSystem implements Closeable
     {
         request.clear();
 
-        request.put("username", username);
+        request.put(Constants.TOKEN, token);
         request.put("command", Constants.DOWNLOAD);
 
         writer.println(request.toString());
@@ -103,7 +103,7 @@ public class FileSystem implements Closeable
     {
         request.clear();
 
-        request.put("username", username);
+        request.put(Constants.TOKEN, token);
         request.put("command", Constants.START_SENDING);
         request.put("fileName", fileName.trim());
 
@@ -213,7 +213,7 @@ public class FileSystem implements Closeable
         {
             request.clear();
 
-            request.put("username", username);
+            request.put(Constants.TOKEN, token);
             request.put("command", Constants.DELETE);
             request.put("fileName",fileName);
 

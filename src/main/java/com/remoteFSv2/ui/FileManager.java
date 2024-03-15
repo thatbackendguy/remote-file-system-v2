@@ -1,7 +1,8 @@
-package com.remoteFSv2.client.ui;
+package com.remoteFSv2.ui;
 
 import com.remoteFSv2.client.connection.ClientSocket;
 import com.remoteFSv2.client.handler.FileSystem;
+import com.remoteFSv2.client.handler.User;
 import com.remoteFSv2.utils.Constants;
 import org.json.JSONException;
 
@@ -64,7 +65,7 @@ public class FileManager
                     case Constants.LIST:
                         socket = clientSocket.connectServer();
 
-                        fileSystem = new FileSystem(username, socket);
+                        fileSystem = new FileSystem(User.userData.get(username), socket);
 
                         fileSystem.listFiles();
 

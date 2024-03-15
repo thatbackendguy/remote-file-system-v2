@@ -7,6 +7,7 @@ import com.remoteFSv2.utils.JWTUtil;
 import org.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 public class User
@@ -15,9 +16,9 @@ public class User
 
     private final ClientConnection clientConnection;
 
-    static HashMap<String, String> userCredentials = new HashMap<>();
+    public static ConcurrentHashMap<String, String> userCredentials = new ConcurrentHashMap<>();
 
-    static HashMap<String, String> usersMap = new HashMap<>();
+    public static ConcurrentHashMap<String, String> usersMap = new ConcurrentHashMap<>();
 
 
     public User(ClientConnection clientConnection)
@@ -31,8 +32,8 @@ public class User
         response.clear();
         if(userCredentials.containsKey(username))
         {
-            response.put("status", 1);
-            response.put("message", Constants.SERVER + Constants.REGISTRATION_ERROR);
+            response.put(Constants.STATUS_CODE, 1);
+            response.put(Constants.MESSAGE, Constants.SERVER + Constants.REGISTRATION_ERROR);
 
             clientConnection.send(response.toString());
         }
@@ -45,9 +46,9 @@ public class User
 
             usersMap.put(username, token);
 
-            response.put("status", 0);
-            response.put("token", token);
-            response.put("message", Constants.SERVER + Constants.REGISTRATION_SUCCESS);
+            response.put(Constants.STATUS_CODE, 0);
+            response.put(Constants.TOKEN, token);
+            response.put(Constants.MESSAGE, Constants.SERVER + Constants.REGISTRATION_SUCCESS);
 
             clientConnection.send(response.toString());
         }
@@ -58,27 +59,20 @@ public class User
     {
         if(userCredentials.isEmpty())
         {
-            response.put("status", 1);
-            response.put("message", Constants.SERVER + Constants.LOGIN_ERROR);
+            response.put(Constants.STATUS_CODE, 1);
+            response.put(Constants.MESSAGE, Constants.SERVER + Constants.LOGIN_ERROR);
 
             clientConnection.send(response.toString());
         }
         if(userCredentials.containsKey(username)) // user exists
         {
-            if(password.equals(userCredentials.get(username))) // password match
+            if(username.equals(JWTUtil.verifyToken(token))) // token match
             {
-                if(token.isEmpty()) // token doesn't exists
+                if(password.equals(userCredentials.get(username))) // password match
                 {
-                    response.put("status", 1);
-                    response.put("message", Constants.SERVER + Constants.LOGIN_ERROR);
-
-                    clientConnection.send(response.toString());
-                }
-                else if(username.equals(JWTUtil.verifyToken(token)))
-                {
-                    response.put("status", 0);
-                    response.put("token", token);
-                    response.put("message", Constants.SERVER + Constants.LOGIN_SUCCESS);
+                    response.put(Constants.STATUS_CODE, 0);
+                    response.put(Constants.TOKEN, token);
+                    response.put(Constants.MESSAGE, Constants.SERVER + Constants.LOGIN_SUCCESS);
 
                     usersMap.put(username, token);
 
@@ -86,18 +80,32 @@ public class User
                 }
                 else
                 {
-                    response.put("status", 1);
-                    response.put("message", Constants.SERVER + Constants.LOGIN_ERROR);
+                    response.put(Constants.STATUS_CODE, 1);
+                    response.put(Constants.MESSAGE, Constants.SERVER + Constants.INVALID_CREDENTIALS);
 
                     clientConnection.send(response.toString());
                 }
 
             }
+            else if(token.isEmpty()) // token doesn't exists
+            {
+                response.put(Constants.STATUS_CODE, 1);
+                response.put(Constants.MESSAGE, Constants.SERVER + Constants.JWT_EMPTY);
+
+                clientConnection.send(response.toString());
+            }
+            else
+            {
+                response.put(Constants.STATUS_CODE, 1);
+                response.put(Constants.MESSAGE, Constants.SERVER + Constants.JWT_INVALID);
+
+                clientConnection.send(response.toString());
+            }
         }
         else
         {
-            response.put("status", 1);
-            response.put("message", Constants.SERVER + Constants.LOGIN_ERROR);
+            response.put(Constants.STATUS_CODE, 1);
+            response.put(Constants.MESSAGE, Constants.SERVER + Constants.LOGIN_ERROR);
 
             clientConnection.send(response.toString());
         }

@@ -1,6 +1,6 @@
 package com.remoteFSv2.client;
 
-import com.remoteFSv2.client.ui.UserAuthentication;
+import com.remoteFSv2.ui.UserAuthentication;
 import com.remoteFSv2.utils.Constants;
 
 import java.io.IOException;
