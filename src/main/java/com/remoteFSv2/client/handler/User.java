@@ -25,14 +25,16 @@ public class User
 
     public User(Socket socket) throws IOException
     {
+
         this.socket = socket;
 
         this.reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
         this.writer = new PrintWriter(socket.getOutputStream(), true);
+
     }
 
-    public boolean authenticateUser(String command, String username, String password) throws JSONException, IOException
+    public boolean authenticateUser(String command, String username, String password) throws JSONException, IOException,NullPointerException
     {
         if(command.equals(Constants.LOGIN))
         {
@@ -96,7 +98,7 @@ public class User
         return false;
     }
 
-    public String sendRequest(String request) throws IOException
+    public String sendRequest(String request) throws IOException,NullPointerException
     {
         writer.println(request); // Send request to server
 

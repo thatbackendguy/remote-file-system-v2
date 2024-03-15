@@ -13,12 +13,12 @@ import com.remoteFSv2.utils.Constants;
 
 public class Server
 {
-    public static void main(String[] args)
+    public static void start()
     {
         ServerSocket serverSocket = null;
 
         ThreadPoolExecutor threadPoolExecutor = null;
-        
+
         ClientConnection clientConnection = null;
 
         try
@@ -27,7 +27,7 @@ public class Server
 
             System.out.println(Constants.SERVER + Constants.SERVER_START_SUCCESS + Config.SERVER_PORT);
 
-            threadPoolExecutor = new ThreadPoolExecutor(Config.CORE_POOL_SIZE, Config.MAXIMUM_POOL_SIZE, Config.KEEP_ALIVE_TIME, Config.UNIT, Config.WORKERS);
+            threadPoolExecutor = new ThreadPoolExecutor(Config.CORE_POOL_SIZE, Config.MAXIMUM_POOL_SIZE, Config.KEEP_ALIVE_TIME, Config.TIME_UNIT, Config.WORKERS);
 
             while(true)
             {
@@ -46,9 +46,13 @@ public class Server
 
         } catch(IOException io)
         {
+            System.out.println(Constants.SERVER + Constants.SERVER_START_ERROR);
+
+        } catch(Exception e)
+        {
             System.out.println(Constants.SERVER + Constants.SERVER_DOWN);
-        }
-        finally
+
+        } finally
         {
             try
             {
@@ -58,13 +62,13 @@ public class Server
 
                 threadPoolExecutor.shutdown();
 
-                System.out.println(Constants.SERVER+Constants.SERVER_STOP);
+                System.out.println(Constants.SERVER + Constants.SERVER_STOP);
 
-            }catch(NullPointerException npe)
+            } catch(NullPointerException npe)
             {
-                System.out.println(Constants.SERVER + Constants.SERVER_START_ERROR);
-            }
-             catch(IOException e)
+                System.out.println(Constants.SERVER + Constants.SERVER_STOP_ERROR);
+
+            } catch(IOException e)
             {
                 System.out.println(Constants.SERVER + Constants.SERVER_STOP_ERROR + e.getMessage());
             }

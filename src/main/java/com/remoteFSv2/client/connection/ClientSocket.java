@@ -33,7 +33,7 @@ public class ClientSocket
         }
         catch(IOException e)
         {
-            System.out.println("[Client] Error: " + e.getMessage());
+            System.out.println(Constants.CLIENT + Constants.CONNECTION_ERROR);
 
             System.out.println("[Client] Retrying again in 5 seconds...");
 
@@ -46,7 +46,7 @@ public class ClientSocket
             {
                 System.out.println(Constants.CLIENT + "Error!\nStatus: FATAL\nMessage: "+ex.getMessage());
             }
-            Client.main(null);
+            Client.start();
         }
         return null;
     }

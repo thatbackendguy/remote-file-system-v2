@@ -5,8 +5,6 @@ public class Constants
 
     public static final String SERVER = "[Server] ";
 
-    public static final String IO_ERROR = "Error in Input/Output stream!";
-
     public static final String CLIENT = "[Client] ";
 
     // Switch case options - Request Handler
@@ -97,6 +95,7 @@ public class Constants
 
     public static final String SERVER_DOWN = "Server Down!";
 
+    public static final String IO_ERROR = "Error in Input/Output stream!";
 
     // Client Messages
     public static final String CLIENT_START_SUCCESS = "Client started successfully!";
