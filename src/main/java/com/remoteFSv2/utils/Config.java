@@ -15,6 +15,9 @@ public class Config
     public static final String ROOT_DIR_SERVER = "/home/yash/IdeaProjects/remoteFSv2/src/main/resources/ServerFS/";
 
     public static final int SERVER_PORT = 12345;
+
+    public static final int CHUNK_SIZE = 4096;
+
     public static final String JWT_SECRET = "remoteFS";
 
     public static final long JWT_EXPIRATION_TIME_MS = 3600000; // 1 hour

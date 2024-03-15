@@ -1,6 +1,6 @@
 package com.remoteFSv2.utils;
 
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Scanner;
@@ -9,29 +9,29 @@ public class Common
 {
     public static void removeDirRecursively(String filePath) throws IOException
     {
-            Path directoryPath = Paths.get(filePath);
+        Path directoryPath = Paths.get(filePath);
 
-            if(Files.exists(directoryPath))
+        if(Files.exists(directoryPath))
+        {
+            Files.walkFileTree(directoryPath, new SimpleFileVisitor<Path>()
             {
-                Files.walkFileTree(directoryPath, new SimpleFileVisitor<Path>()
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException
                 {
-                    @Override
-                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException
-                    {
-                        Files.delete(file);
+                    Files.delete(file);
 
-                        return FileVisitResult.CONTINUE;
-                    }
+                    return FileVisitResult.CONTINUE;
+                }
 
-                    @Override
-                    public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException
-                    {
-                        Files.delete(dir);
+                @Override
+                public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException
+                {
+                    Files.delete(dir);
 
-                        return FileVisitResult.CONTINUE;
-                    }
-                });
-            }
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+        }
 
 
     }
@@ -79,5 +79,62 @@ public class Common
         }
 
         return input;
+    }
+
+    public static boolean receiveFile(DataInputStream dataInputStream, String filePath)
+    {
+        try
+        {
+            var bytes = 0;
+
+            var fileOutputStream = new FileOutputStream(filePath);
+
+            // read file size
+            var size = dataInputStream.readLong();
+
+            var buffer = new byte[Config.CHUNK_SIZE]; // 4KB
+
+            while(size > 0 && (bytes = dataInputStream.read(buffer, 0, (int) Math.min(buffer.length, size))) != -1)
+            {
+                // Here we write the file using write method
+                fileOutputStream.write(buffer, 0, bytes);
+
+                size -= bytes; // read upto file size
+            }
+
+            fileOutputStream.close();
+
+            return true;
+        } catch(IOException io)
+        {
+            return false;
+        }
+    }
+
+    public static boolean sendFile(FileInputStream fileInputStream, DataOutputStream dataOutputStream, File file)
+    {
+        try
+        {
+            // Here we send the File length to Client
+            dataOutputStream.writeLong(file.length());
+
+            var bytes = 0;
+
+            // Here we break file into 4KB chunks
+            var buffer = new byte[Config.CHUNK_SIZE];
+
+            while((bytes = fileInputStream.read(buffer)) != -1)
+            {
+                // Send the file to Client Socket
+                dataOutputStream.write(buffer, 0, bytes);
+
+                dataOutputStream.flush();
+            }
+
+            return true;
+        } catch(IOException io)
+        {
+            return false;
+        }
     }
 }

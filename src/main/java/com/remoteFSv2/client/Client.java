@@ -220,7 +220,7 @@ public class Client
 
                         fileSystem.listFiles();
 
-                        System.out.print("Enter your choice (0) to exit: ");
+                        System.out.print("Enter file name to download or (0) to exit: ");
 
                         input = sc.nextLine();
 
@@ -232,7 +232,7 @@ public class Client
                         }
                         else
                         {
-                            fileSystem.reqDownloadFile(input);
+                            fileSystem.requestDownload(input);
                         }
                         fileSystem.close();
 
@@ -257,7 +257,7 @@ public class Client
                         }
                         else
                         {
-                            fileSystem.uploadFile(input);
+                            fileSystem.requestUpload(input);
                         }
                         fileSystem.close();
 

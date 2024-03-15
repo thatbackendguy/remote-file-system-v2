@@ -1,6 +1,7 @@
 package com.remoteFSv2.client.handler;
 
 import com.remoteFSv2.client.Client;
+import com.remoteFSv2.utils.Common;
 import com.remoteFSv2.utils.Config;
 import com.remoteFSv2.utils.Constants;
 import org.json.JSONObject;
@@ -9,7 +10,6 @@ import java.io.*;
 import java.net.Socket;
 import java.nio.file.*;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentSkipListMap;
 
 public class FileSystem implements Closeable
 {
@@ -66,96 +66,57 @@ public class FileSystem implements Closeable
         }
     }
 
-    public void reqDownloadFile(String fileChoice) throws IOException
+    public void requestDownload(String fileName) throws IOException
     {
         request.clear();
 
         request.put(Constants.TOKEN, token);
+
         request.put(Constants.COMMAND, Constants.DOWNLOAD);
 
-        writer.println(request.toString());
-        var response = reader.readLine();
+        request.put(Constants.CURRENT_DIR_PATH, Client.currPath);
 
-        var resJSON = new JSONObject(response);
-
-        if(response.equals("null"))
-        {
-            throw new IOException();
-        }
-        var command = response.split(" ", 2)[0]; // "START_RECEIVING" command
-
-        if(command.equals("START_RECEIVING"))
-        {
-            var argument = response.split(" ", 2)[1]; // FILE-NAME
-
-            if(receiveFileFromServer(argument))
-            {
-                System.out.println("[Client] File downloaded successfully!");
-
-                reader.readLine();
-
-            }
-            else
-            {
-                System.out.println("[Client] Error! File not received properly!");
-            }
-        }
-        else
-        {
-            System.out.println("[Client] File not found on server!");
-        }
-
-
-    }
-
-    public boolean receiveFileFromServer(String fileName) throws IOException
-    {
-        request.clear();
-
-        request.put(Constants.TOKEN, token);
-        request.put(Constants.COMMAND, Constants.START_SENDING);
         request.put(Constants.FILE_NAME, fileName.trim());
 
         writer.println(request.toString());
 
-
-        var bytes = 0;
-
         var dataInputStream = new DataInputStream(socket.getInputStream());
 
-        var fileOutputStream = new FileOutputStream(Config.ROOT_DIR_CLIENT + fileName);
+        var success = Common.receiveFile(dataInputStream, Config.ROOT_DIR_CLIENT + fileName);
 
-        // read file size
-        var size = dataInputStream.readLong();
-
-        var buffer = new byte[8192]; // 8KB
-
-        while(size > 0 && (bytes = dataInputStream.read(buffer, 0, (int) Math.min(buffer.length, size))) != -1)
+        if(success)
         {
-            // Here we write the file using write method
-            fileOutputStream.write(buffer, 0, bytes);
-
-            size -= bytes; // read upto file size
+            System.out.println(Constants.CLIENT + Constants.FILE_DOWNLOAD_SUCCESS);
         }
-
-        fileOutputStream.close();
-
-        return true;
+        else
+        {
+            System.out.println(Constants.CLIENT + Constants.FILE_DOWNLOAD_ERROR);
+        }
 
     }
 
 
-    public boolean uploadFile(String localPath)
+    public void requestUpload(String localPath)
     {
-        var fileDirectories = localPath.trim().split("/");
+        Path filePath = Paths.get(localPath);
 
-        var fileName = fileDirectories[fileDirectories.length - 1];
-
-        if(Files.exists(Paths.get(localPath)) && fileName.contains("."))
+        if(Common.validateFilePath(filePath))
         {
             try
             {
-                writer.println("UPLOAD " + fileName);
+                var fileName = String.valueOf(filePath.getFileName());
+
+                request.clear();
+
+                request.put(Constants.TOKEN, token);
+
+                request.put(Constants.COMMAND, Constants.UPLOAD);
+
+                request.put(Constants.CURRENT_DIR_PATH, Client.currPath);
+
+                request.put(Constants.FILE_NAME, fileName);
+
+                writer.println(request.toString());
 
                 var file = new File(localPath);
 
@@ -163,54 +124,34 @@ public class FileSystem implements Closeable
 
                 FileInputStream fileInputStream = new FileInputStream(file);
 
-                // Here we send the File to Server
-                dataOutputStream.writeLong(file.length());
+                var success = Common.sendFile(fileInputStream, dataOutputStream, file);
 
-                var bytes = 0;
+                var response = reader.readLine();
 
-                // Here we break file into 8KB chunks
-                var buffer = new byte[8192];
+                var resJSON = new JSONObject(response);
 
-                while((bytes = fileInputStream.read(buffer)) != -1)
+                if(success && resJSON.getInt(Constants.STATUS_CODE) == 0)
                 {
-                    // Send the file to Server Socket
-                    dataOutputStream.write(buffer, 0, bytes);
-
-                    dataOutputStream.flush();
+                    System.out.println(resJSON.getString(Constants.MESSAGE));
                 }
-
-                // close the file here
-                fileInputStream.close();
-
-                reader.readLine();
-
-                return true;
-
-            } catch(NullPointerException npe)
-            {
-                System.out.println("[Client] Server is down!");
-
-                return false;
+                else
+                {
+                    System.out.println(resJSON.getString(Constants.MESSAGE));
+                }
 
             } catch(FileNotFoundException e)
             {
-                System.out.println("[Client] File not found!");
-
-                return false;
+                System.out.println(Constants.CLIENT + Constants.FILE_NOT_FOUND);
 
             } catch(IOException io)
             {
-                System.out.println("[Client] Data input/output stream error...\nError: " + io.getMessage());
-
-                return false;
+                System.out.println(Constants.CLIENT + Constants.IO_ERROR + "\nError: " + io.getMessage());
             }
 
         }
         else
         {
-            System.out.println("[Client] Incorrect file path!");
-
-            return false;
+            System.out.println(Constants.CLIENT + Constants.INVALID_PATH);
         }
 
     }

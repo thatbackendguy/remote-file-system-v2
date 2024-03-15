@@ -75,7 +75,8 @@ public class Constants
     public static final String UNAUTHORIZED_ACCESS = "Unauthorized access!";
 
     // File Transfer Messages
-    public static final String FILE_TRANSFER_ERROR = "Error during file transfer!";
+    public static final String FILE_SENT_SUCCESS = "File sent successfully!";
+    public static final String FILE_SENT_ERROR = "Error! File not sent!";
 
     public static final String FILE_UPLOAD_ERROR = "Error uploading file!";
 

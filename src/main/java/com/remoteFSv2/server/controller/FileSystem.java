@@ -2,6 +2,7 @@ package com.remoteFSv2.server.controller;
 
 import com.remoteFSv2.server.handler.ClientConnection;
 import com.remoteFSv2.utils.Common;
+import com.remoteFSv2.utils.Config;
 import com.remoteFSv2.utils.Constants;
 import com.remoteFSv2.utils.JWTUtil;
 import org.json.JSONObject;
@@ -9,7 +10,6 @@ import org.json.JSONObject;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
-import java.util.concurrent.atomic.*;
 
 
 public class FileSystem
@@ -37,7 +37,7 @@ public class FileSystem
         {
             try
             {
-                var directory = Paths.get(rootDirectory ,username,currPath);
+                var directory = Paths.get(rootDirectory, username, currPath);
 
                 var files = new ArrayList<String>();
 
@@ -76,101 +76,85 @@ public class FileSystem
 
     }
 
-    //    public void getFileName(Integer fileChoice)
-    //    {
-    //        if(fileMap.containsKey(fileChoice))
-    //        {
-    //            return "START_RECEIVING " + fileMap.get(fileChoice);
-    //        }
-    //        else
-    //        {
-    //            return "FILE_NOT_FOUND";
-    //        }
-    //    }
-    //
-    //    public void sendFile(String fileName)
-    //    {
-    //
-    //        var file = new File(rootDirectory + fileName);
-    //
-    //        try(var fileInputStream = new FileInputStream(file))
-    //        {
-    //            var dataOutputStream = new DataOutputStream(clientConnection.clientSocket.getOutputStream());
-    //
-    //            // Here we send the File length to Client
-    //            dataOutputStream.writeLong(file.length());
-    //
-    //            var bytes = 0;
-    //
-    //            // Here we  break file into 8KB chunks
-    //            var buffer = new byte[8192];
-    //
-    //            while((bytes = fileInputStream.read(buffer)) != -1)
-    //            {
-    //                // Send the file to Client Socket
-    //                dataOutputStream.write(buffer, 0, bytes);
-    //
-    //                dataOutputStream.flush();
-    //            }
-    //
-    //            // close the file here
-    //            fileInputStream.close();
-    //
-    //            return true;
-    //
-    //        } catch(FileNotFoundException e)
-    //        {
-    //            System.out.println("[Server] File not found!");
-    //
-    //        }
-    //        catch(IOException io)
-    //        {
-    //            System.out.println("[Server] Data input/output stream error...\nError: " + io.getMessage());
-    //
-    //        }
-    //
-    //        return false;
-    //    }
-    //
-    //    public void receiveFile(String fileName)
-    //    {
-    //        try
-    //        {
-    //            var bytes = 0;
-    //
-    //            var dataInputStream = new DataInputStream(clientConnection.clientSocket.getInputStream());
-    //
-    //            var fileOutputStream = new FileOutputStream(rootDirectory + fileName);
-    //
-    //            var size = dataInputStream.readLong(); // read file size
-    //
-    //            var buffer = new byte[8192]; // 8KB
-    //
-    //            while(size > 0 && (bytes = dataInputStream.read(buffer, 0, (int) Math.min(buffer.length, size))) != -1)
-    //            {
-    //                // Here we write the file using write method
-    //                fileOutputStream.write(buffer, 0, bytes);
-    //
-    //                size -= bytes; // read upto file size
-    //            }
-    //
-    //            fileOutputStream.close();
-    //
-    //            return true;
-    //
-    //        } catch(NullPointerException npe)
-    //        {
-    //            System.out.println("[Server] Server is down!");
-    //
-    //            return false;
-    //        }catch(IOException e)
-    //        {
-    //            System.out.println("[Server] Error in receiving file from server...\nError: " + e.getMessage());
-    //
-    //            return false;
-    //        }
-    //    }
-    //
+    public void invokeSendFile(String token, String currPath, String fileName)
+    {
+        response.clear();
+
+        String username = JWTUtil.verifyToken(token);
+
+        if(username != null) // if token present
+        {
+            var filePath = Paths.get(rootDirectory, username, currPath, fileName);
+
+            if(Common.validateFilePath(filePath)) // if valid file path
+            {
+                try
+                {
+                    var file = new File(String.valueOf(filePath));
+
+                    var fileInputStream = new FileInputStream(file);
+
+                    var dataOutputStream = new DataOutputStream(clientConnection.clientSocket.getOutputStream());
+
+                    var success = Common.sendFile(fileInputStream, dataOutputStream, file);
+
+                    if(success)
+                    {
+                        System.out.println(Constants.SERVER + Constants.FILE_SENT_SUCCESS);
+                    }
+                    else
+                    {
+                        System.out.println(Constants.SERVER + Constants.FILE_SENT_ERROR);
+                    }
+
+
+                } catch(IOException io)
+                {
+                    System.out.println(Constants.SERVER + Constants.IO_ERROR + "\nError: " + io.getMessage());
+                }
+            }
+
+        }
+
+    }
+
+    public void invokeReceiveFile(String token, String currPath, String fileName)
+    {
+        response.clear();
+
+        String username = JWTUtil.verifyToken(token);
+
+        if(username != null)
+        {
+            try
+            {
+                var dataInputStream = new DataInputStream(clientConnection.clientSocket.getInputStream());
+
+                var filePath = Config.ROOT_DIR_SERVER + "/" + username + currPath + "/" + fileName;
+                var success = Common.receiveFile(dataInputStream, filePath);
+                if(success)
+                {
+                    response.put(Constants.STATUS_CODE, 0);
+
+                    response.put(Constants.MESSAGE, Constants.SERVER + Constants.FILE_UPLOAD_SUCCESS);
+                }
+                else
+                {
+                    response.put(Constants.STATUS_CODE, 1);
+
+                    response.put(Constants.MESSAGE, Constants.SERVER + Constants.FILE_UPLOAD_ERROR);
+                }
+            } catch(IOException e)
+            {
+                response.put(Constants.STATUS_CODE, 1);
+
+                response.put(Constants.MESSAGE, Constants.SERVER + Constants.FILE_UPLOAD_ERROR);
+            }
+
+            clientConnection.send(response.toString());
+        }
+    }
+
 
     public void deleteFile(String token, String fileName)
     {
@@ -336,11 +320,11 @@ public class FileSystem
 
             if(Files.isDirectory(dirPath) && Files.exists(dirPath))
             {
-                var resDirPath = Paths.get(currPath,destPath);
+                var resDirPath = Paths.get(currPath, destPath);
 
                 response.put(Constants.STATUS_CODE, 0);
 
-                response.put(Constants.CURRENT_DIR_PATH,String.valueOf(resDirPath));
+                response.put(Constants.CURRENT_DIR_PATH, String.valueOf(resDirPath));
             }
             else
             {
@@ -363,47 +347,5 @@ public class FileSystem
 
         clientConnection.send(response.toString());
     }
-
-//    public void goBackOneDir(String token, String currPath)
-//    {
-//        response.clear();
-//
-//        var username = JWTUtil.verifyToken(token);
-//
-//        if(username != null)
-//        {
-//            var dirPath = Paths.get(rootDirectory, username, currPath);
-//
-//            if(Files.isDirectory(dirPath) && Files.exists(dirPath))
-//            {
-//                var parentPath = dirPath.getParent();
-//
-//                var resDirPath = Paths.get(currPath,destPath);
-//
-//                response.put(Constants.STATUS_CODE, 0);
-//
-//                response.put(Constants.CURRENT_DIR_PATH,String.valueOf(resDirPath));
-//            }
-//            else
-//            {
-//                response.clear();
-//
-//                response.put(Constants.STATUS_CODE, 1);
-//
-//                response.put(Constants.MESSAGE, Constants.SERVER + Constants.INVALID_PATH);
-//            }
-//
-//
-//        }
-//        else
-//        {
-//            response.put(Constants.STATUS_CODE, 1);
-//
-//            response.put(Constants.MESSAGE, Constants.SERVER + Constants.UNAUTHORIZED_ACCESS);
-//
-//        }
-//
-//        clientConnection.send(response.toString());
-//    }
 
 }

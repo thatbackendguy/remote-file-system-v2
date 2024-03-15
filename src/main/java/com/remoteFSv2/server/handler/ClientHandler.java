@@ -97,24 +97,17 @@ public class ClientHandler extends Thread
                 fileSystemController.listFiles(request.getString(Constants.TOKEN), request.getString(Constants.CURRENT_DIR_PATH));
 
                 return;
-            //            case Constants.DOWNLOAD:
-            //                // Example: DOWNLOAD indexOfFile
-            //
-            //                fileSystemController.getFileName(1);
-            //                return;
-            //
-            //            case Constants.START_SENDING:
-            //                // for starting the sending of file when server receives confirmation from "DOWNLOAD"
-            //
-            //                fileSystemController.sendFile("1");
-            //
-            //                return;
-            //            case Constants.UPLOAD:
-            //                // Example: UPLOAD fileName
-            //
-            //                fileSystemController.receiveFile("argument");
-            //
-            //                return;
+            case Constants.DOWNLOAD:
+
+                fileSystemController.invokeSendFile(request.getString(Constants.TOKEN), request.getString(Constants.CURRENT_DIR_PATH), request.getString(Constants.FILE_NAME));
+
+                return;
+
+            case Constants.UPLOAD:
+
+                fileSystemController.invokeReceiveFile(request.getString(Constants.TOKEN), request.getString(Constants.CURRENT_DIR_PATH), request.getString(Constants.FILE_NAME));
+
+                return;
 
             case Constants.DELETE:
 
