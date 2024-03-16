@@ -130,7 +130,7 @@ public class FileSystem
             {
                 var dataInputStream = new DataInputStream(clientConnection.clientSocket.getInputStream());
 
-                var filePath = Config.ROOT_DIR_SERVER + "/" + username + currPath + "/" + fileName;
+                var filePath = Config.ROOT_DIR_SERVER + username + currPath + "/" + fileName;
 
                 var success = Common.receiveFile(dataInputStream, filePath);
 

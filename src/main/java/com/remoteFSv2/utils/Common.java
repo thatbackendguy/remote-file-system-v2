@@ -81,7 +81,7 @@ public class Common
         return input;
     }
 
-    public static boolean receiveFile(DataInputStream dataInputStream, String filePath)
+    public static synchronized boolean receiveFile(DataInputStream dataInputStream, String filePath)
     {
         try
         {
@@ -111,7 +111,7 @@ public class Common
         }
     }
 
-    public static boolean sendFile(FileInputStream fileInputStream, DataOutputStream dataOutputStream, File file)
+    public static synchronized boolean sendFile(FileInputStream fileInputStream, DataOutputStream dataOutputStream, File file)
     {
         try
         {

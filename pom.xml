@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.motadata</groupId>
+    <groupId>com.remoteFS</groupId>
     <artifactId>remoteFSv2</artifactId>
     <version>1.0-SNAPSHOT</version>
 
@@ -28,7 +28,7 @@
             <version>4.4.0</version>
         </dependency>
 
-<!--        table formatter-->
+        <!--table formatter-->
         <dependency>
             <groupId>io.bretty</groupId>
             <artifactId>console-table-builder</artifactId>
@@ -36,5 +36,23 @@
         </dependency>
 
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>com.remoteFSv2.BootStrap</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

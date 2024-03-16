@@ -35,9 +35,9 @@ public class Client
         {
             Scanner sc = new Scanner(System.in);
 
-            System.out.println("--------------------");
-            System.out.println("" + Constants.DOUBLE_TAB + "Menu");
-            System.out.println("--------------------");
+            System.out.println("--------------------------------");
+            System.out.println("\tREMOTE FILE SYSTEM");
+            System.out.println("--------------------------------");
             System.out.println("1. Login");
             System.out.println("2. Register");
             System.out.println("0. Exit");
@@ -62,7 +62,7 @@ public class Client
 
 
                             System.out.println("--------------------");
-                            System.out.println("" + Constants.DOUBLE_TAB + "Login");
+                            System.out.println("\tLogin");
                             System.out.println("--------------------");
 
                             System.out.print("Enter username: ");
@@ -97,7 +97,7 @@ public class Client
                             userHandler = new User(socket);
 
                             System.out.println("-----------------------");
-                            System.out.println("" + Constants.DOUBLE_TAB + "Register");
+                            System.out.println("\tRegister");
                             System.out.println("-----------------------");
 
                             username = Common.limitedLengthInputPrompt("username");
@@ -195,6 +195,8 @@ public class Client
         ClientSocket clientSocket = ClientSocket.getInstance();
 
         System.out.println("Welcome to the Remote File System!");
+
+        System.out.println("Note: Enter 'help' for more info...");
 
         while(true)
         {
