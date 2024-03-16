@@ -204,9 +204,13 @@ public class FileSystem implements Closeable
         request.put(Constants.TOKEN, token);
 
         if(Objects.equals(command, Constants.MKDIR))
+        {
             request.put(Constants.COMMAND, Constants.MKDIR);
+        }
         else
+        {
             request.put(Constants.COMMAND, Constants.RMDIR);
+        }
 
         request.put(Constants.DIR_NAME, dirName);
 

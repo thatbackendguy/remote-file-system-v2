@@ -7,14 +7,12 @@ import com.remoteFSv2.utils.Common;
 import com.remoteFSv2.utils.Constants;
 import io.bretty.console.table.Alignment;
 import io.bretty.console.table.ColumnFormatter;
-import io.bretty.console.table.Precision;
 import io.bretty.console.table.Table;
 import org.json.JSONException;
 
 import java.io.IOException;
 import java.net.Socket;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -31,6 +29,7 @@ public class Client
         ClientSocket clientSocket = ClientSocket.getInstance();
 
         System.out.println("Welcome to the Remote File System!");
+
         while(true)
         {
             Scanner sc = new Scanner(System.in);
@@ -48,6 +47,7 @@ public class Client
                 var choice = sc.nextInt();
 
                 var username = "";
+
                 var password = "";
 
                 switch(choice)
@@ -84,8 +84,9 @@ public class Client
                         }
                         else
                         {
-                            throw new IOException();
+                            return;
                         }
+
                         break;
 
                     // REGISTER
@@ -125,8 +126,9 @@ public class Client
                         }
                         else
                         {
-                            throw new IOException();
+                            return;
                         }
+
                         break;
 
 
@@ -152,7 +154,7 @@ public class Client
 
                 break;
 
-            } catch(InputMismatchException | NumberFormatException numberFormatException)
+            } catch(InputMismatchException e)
             {
                 System.out.println(Constants.INVALID_INPUT + " Valid range = [0-2]");
             }
@@ -162,11 +164,11 @@ public class Client
 
     private static void printHelp()
     {
-        var commands = new String[]{"ls","pwd","cd","rm","get","put","mkdir","rmdir","logout"};
+        var commands = new String[]{"ls", "pwd", "cd", "rm", "get", "put", "mkdir", "rmdir", "logout"};
 
-        var descriptions = new String[]{"List files","Get current working directory","Change Directory","Delete file","Download file","Upload file","Make Directory","Remove Directory","Logout"};
+        var descriptions = new String[]{"List files", "Get current working directory", "Change Directory", "Delete file", "Download file", "Upload file", "Make Directory", "Remove Directory", "Logout"};
 
-        var examples = new String[]{"ls","pwd","cd <valid dir name>/..","rm <file name>","get <file name>","put <local file path>","mkdir <dir name>","rmdir <file name>","logout"};
+        var examples = new String[]{"ls", "pwd", "cd <valid dir name>/..", "rm <file name>", "get <file name>", "put <local file path>", "mkdir <dir name>", "rmdir <file name>", "logout"};
 
         ColumnFormatter<String> commandFormatter = ColumnFormatter.text(Alignment.LEFT, 10);
 
@@ -176,9 +178,9 @@ public class Client
 
         Table.Builder builder = new Table.Builder("Command", commands, commandFormatter);
 
-        builder.addColumn("Description",descriptions,descFormatter);
+        builder.addColumn("Description", descriptions, descFormatter);
 
-        builder.addColumn("Usage",examples,exFormatter);
+        builder.addColumn("Usage", examples, exFormatter);
 
         Table table = builder.build();
 
@@ -367,7 +369,9 @@ public class Client
                         else if(argument.equals("..")) // go back to parent directory
                         {
                             if(currPath.equals("/"))
+                            {
                                 break;
+                            }
                             currPath = String.valueOf(Path.of(currPath).getParent());
                         }
                         else
@@ -402,12 +406,6 @@ public class Client
             } catch(IOException e)
             {
                 System.out.println(Constants.CLIENT + Constants.CONNECTION_ERROR);
-
-                break;
-
-            } catch(NumberFormatException nfe)
-            {
-                System.out.println(Constants.CLIENT + "Error: " + nfe.getMessage());
 
                 break;
 

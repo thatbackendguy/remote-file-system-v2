@@ -3,10 +3,8 @@ package com.remoteFSv2.server;
 
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.nio.file.*;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import com.remoteFSv2.utils.Common;
 import com.remoteFSv2.utils.Config;
 import com.remoteFSv2.server.controller.FileSystem;
 import com.remoteFSv2.server.controller.User;
@@ -26,11 +24,6 @@ public class Server
 
         try
         {
-            Common.removeDirRecursively(Config.ROOT_DIR_SERVER);
-
-            System.out.println(Constants.SERVER + "Cleanup Successful!");
-
-            Files.createDirectories(Path.of(Config.ROOT_DIR_SERVER));
 
             serverSocket = new ServerSocket(Config.SERVER_PORT);
 

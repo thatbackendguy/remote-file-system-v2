@@ -56,7 +56,7 @@ public class User
 
             response.put(Constants.MESSAGE, Constants.SERVER + Constants.REGISTRATION_SUCCESS);
 
-            var path = Path.of(Config.ROOT_DIR_SERVER,username);
+            var path = Path.of(Config.ROOT_DIR_SERVER, username);
 
             try
             {

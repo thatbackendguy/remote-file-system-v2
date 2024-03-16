@@ -32,8 +32,6 @@ public class Common
                 }
             });
         }
-
-
     }
 
     public static boolean validateFilePath(Path filePath)
@@ -61,7 +59,7 @@ public class Common
 
         var input = "";
 
-        for(int chance = 0; chance < 3; chance++)
+        for(int chance = 2; chance >= 0; chance--)
         {
             System.out.print("Enter " + identity + ": ");
 
@@ -74,7 +72,7 @@ public class Common
             }
             else
             {
-                System.out.println(identity + " length should be >= 6!");
+                System.out.println(identity + " length should be >= 6! Chances left: " + chance);
             }
         }
 

@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.nio.file.Path;
 import java.util.HashMap;
 
 public class User
@@ -35,7 +34,7 @@ public class User
 
     }
 
-    public boolean authenticateUser(String command, String username, String password) throws JSONException, IOException,NullPointerException
+    public boolean authenticateUser(String command, String username, String password) throws JSONException, IOException, NullPointerException
     {
         if(command.equals(Constants.LOGIN))
         {
@@ -102,7 +101,7 @@ public class User
         return false;
     }
 
-    public String sendRequest(String request) throws IOException,NullPointerException
+    public String sendRequest(String request) throws IOException, NullPointerException
     {
         writer.println(request); // Send request to server
 

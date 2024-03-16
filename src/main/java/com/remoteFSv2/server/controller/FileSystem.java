@@ -169,7 +169,7 @@ public class FileSystem
 
             if(username != null)
             {
-                var file = Paths.get(rootDirectory, username,currPath, fileName);
+                var file = Paths.get(rootDirectory, username, currPath, fileName);
 
                 if(Common.validateFilePath(file))
                 {
@@ -335,7 +335,7 @@ public class FileSystem
 
                 response.put(Constants.STATUS_CODE, 1);
 
-                response.put(Constants.MESSAGE, Constants.SERVER  + currPath+"/"+destPath + " " + Constants.INVALID_PATH);
+                response.put(Constants.MESSAGE, Constants.SERVER + currPath + "/" + destPath + " " + Constants.INVALID_PATH);
             }
 
 

@@ -9,10 +9,10 @@ import java.net.Socket;
 
 public class ClientSocket
 {
-    private ClientSocket(){}
-    
+    private ClientSocket() {}
+
     private static ClientSocket clientSocket = null;
-    
+
     public static ClientSocket getInstance()
     {
         if(clientSocket == null)
@@ -22,16 +22,15 @@ public class ClientSocket
 
         return clientSocket;
     }
-    
+
     public Socket connectServer()
     {
         try
         {
-            var socket = new Socket(Config.HOST,  Config.CLIENT_PORT);
+            var socket = new Socket(Config.HOST, Config.CLIENT_PORT);
 
             return socket;
-        }
-        catch(IOException e)
+        } catch(IOException e)
         {
             System.out.println(Constants.CLIENT + Constants.CONNECTION_ERROR);
 
@@ -44,7 +43,7 @@ public class ClientSocket
 
             } catch(InterruptedException ex)
             {
-                System.out.println(Constants.CLIENT + "Error!\nStatus: FATAL\nMessage: "+ex.getMessage());
+                System.out.println(Constants.CLIENT + "Error!\nStatus: FATAL\nMessage: " + ex.getMessage());
             }
             Client.start();
         }

@@ -59,6 +59,7 @@ public class ClientHandler extends Thread
         } catch(IOException e)
         {
             System.out.println("[Server] Error handling client request: " + e.getMessage());
+
         } finally
         {
             try
@@ -97,6 +98,7 @@ public class ClientHandler extends Thread
                 fileSystemController.listFiles(request.getString(Constants.TOKEN), request.getString(Constants.CURRENT_DIR_PATH));
 
                 return;
+
             case Constants.DOWNLOAD:
 
                 fileSystemController.invokeSendFile(request.getString(Constants.TOKEN), request.getString(Constants.CURRENT_DIR_PATH), request.getString(Constants.FILE_NAME));

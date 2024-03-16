@@ -23,11 +23,14 @@ public class Config
     public static final long JWT_EXPIRATION_TIME_MS = 3600000; // 1 hour
 
     public static final int CORE_POOL_SIZE = 8; // Number of core threads
-    public static final int MAXIMUM_POOL_SIZE = 12; // Maximum number of threads
-    public static final long KEEP_ALIVE_TIME = 60; // Time (in seconds) for idle threads to wait before termination
-    public static final TimeUnit TIME_UNIT = TimeUnit.SECONDS;
-    public static final BlockingQueue<Runnable> WORKERS = new ArrayBlockingQueue<>(100); // Queue capacity
 
+    public static final int MAXIMUM_POOL_SIZE = 12; // Maximum number of threads
+
+    public static final long KEEP_ALIVE_TIME = 60; // Time (in seconds) for idle threads to wait before termination
+
+    public static final TimeUnit TIME_UNIT = TimeUnit.SECONDS;
+
+    public static final BlockingQueue<Runnable> WORKERS = new ArrayBlockingQueue<>(100); // Queue capacity
 
 
 }

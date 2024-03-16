@@ -22,8 +22,6 @@ public class Constants
 
     public static final String REMOVE_FILE = "rm";
 
-    public static final String START_SENDING = "START_SENDING";
-
     public static final String UPLOAD = "put";
 
     public static final String DELETE = "rm";
@@ -76,7 +74,7 @@ public class Constants
 
     // File Transfer Messages
     public static final String FILE_SENT_SUCCESS = "File sent successfully!";
-    public static final String DOUBLE_TAB = "\t\t";
+
     public static final String FILE_SENT_ERROR = "Error! File not sent!";
 
     public static final String FILE_UPLOAD_ERROR = "Error uploading file!";
@@ -84,8 +82,6 @@ public class Constants
     public static final String FILE_UPLOAD_SUCCESS = "File uploaded successfully!";
 
     public static final String DIR_ALREADY_EXISTS = "Directory already exists!";
-
-    public static final String FILE_ALREADY_EXISTS = "File already exists!";
 
     public static final String FILE_DOWNLOAD_ERROR = "Error downloading file!";
 
@@ -96,6 +92,7 @@ public class Constants
     public static final String DIR_DELETE_ERROR = "Error deleting directory!";
 
     public static final String FILE_DELETE_SUCCESS = "File deleted successfully!";
+
     public static final String DIR_DELETE_SUCCESS = "Directory deleted successfully!";
 
 
@@ -110,25 +107,18 @@ public class Constants
 
     public static final String CLIENT_CONNECTED = "New client connected: ";
 
-    public static final String CLIENT_DISCONNECTED = "Client disconnected: ";
-
     public static final String SERVER_DOWN = "Server Down!";
 
     public static final String IO_ERROR = "Error in Input/Output stream!";
 
     // Client Messages
-    public static final String CLIENT_START_SUCCESS = "Client started successfully!";
 
     public static final String CLIENT_START_ERROR = "Error starting client!";
-
-    public static final String CONNECTION_ESTABLISHED = "Connection established with server! ";
 
     public static final String CONNECTION_ERROR = "Error connecting to server!";
 
     // File System Messages
     public static final String FILE_NOT_FOUND = "File not found!";
-
-    public static final String DIRECTORY_NOT_FOUND = "Directory not found!";
 
     public static final String MKDIR_SUCCESS = "Directory created successfully!";
 
@@ -136,18 +126,12 @@ public class Constants
 
     public static final String EMPTY_DIRECTORY = "Directory is empty!";
 
-    public static final String INVALID_FILE_CHOICE = "Invalid file choice!";
-
     public static final String INVALID_PATH = "Invalid path!";
 
     // General Messages
-    public static final String OPERATION_SUCCESSFUL = "Operation successful!";
 
-    public static final String OPERATION_FAILED = "Operation failed!";
 
     public static final String INVALID_INPUT = "Invalid input!";
-
-    public static final String NETWORK_ERROR = "Network error!";
 
     public static final String IMPROPER_JSON = "Improper JSON format!";
 
