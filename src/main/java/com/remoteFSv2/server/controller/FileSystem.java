@@ -107,7 +107,6 @@ public class FileSystem
                         System.out.println(Constants.SERVER + fileName + " " + Constants.FILE_SENT_ERROR);
                     }
 
-
                 } catch(IOException io)
                 {
                     System.out.println(Constants.SERVER + Constants.IO_ERROR + "\nError: " + io.getMessage());

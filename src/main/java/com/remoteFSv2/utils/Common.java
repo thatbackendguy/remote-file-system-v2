@@ -79,7 +79,7 @@ public class Common
         return input;
     }
 
-    public static synchronized boolean receiveFile(DataInputStream dataInputStream, String filePath)
+    public static boolean receiveFile(DataInputStream dataInputStream, String filePath)
     {
         try
         {
@@ -100,8 +100,6 @@ public class Common
                 size -= bytes; // read upto file size
             }
 
-            fileOutputStream.close();
-
             return true;
         } catch(IOException io)
         {
@@ -109,7 +107,7 @@ public class Common
         }
     }
 
-    public static synchronized boolean sendFile(FileInputStream fileInputStream, DataOutputStream dataOutputStream, File file)
+    public static boolean sendFile(FileInputStream fileInputStream, DataOutputStream dataOutputStream, File file)
     {
         try
         {
@@ -134,5 +132,32 @@ public class Common
         {
             return false;
         }
+    }
+
+    public static String getDirName()
+    {
+        ProcessBuilder builder = new ProcessBuilder("whoami");
+        try
+        {
+            Process process = builder.start();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+
+            String username = reader.readLine();
+
+            if(username != null)
+            {
+                process.destroy();
+                reader.close();
+                return "/home/"+username;
+            }
+
+
+        } catch(IOException e)
+        {
+            System.out.println("Cannot fetch directories!\nTaking '/home' by default...");
+        }
+
+        return "/home";
     }
 }

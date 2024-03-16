@@ -7,12 +7,14 @@ import java.util.concurrent.TimeUnit;
 public class Config
 {
     public static final String ROOT_DIR_CLIENT = "/home/yash/IdeaProjects/remoteFSv2/src/main/resources/ClientFS/";
+//    public static final String ROOT_DIR_CLIENT = Common.getDirName() + "/ClientFS/";
 
     public static final int CLIENT_PORT = 12345;
 
     public static final String HOST = "localhost";
 
     public static final String ROOT_DIR_SERVER = "/home/yash/IdeaProjects/remoteFSv2/src/main/resources/ServerFS/";
+//    public static final String ROOT_DIR_SERVER = Common.getDirName() + "/ServerFS/";
 
     public static final int SERVER_PORT = 12345;
 
