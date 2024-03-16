@@ -111,7 +111,7 @@ public class ClientHandler extends Thread
 
             case Constants.DELETE:
 
-                fileSystemController.deleteFile(request.getString(Constants.TOKEN), request.getString(Constants.FILE_NAME));
+                fileSystemController.deleteFile(request.getString(Constants.TOKEN), request.getString(Constants.FILE_NAME), request.getString(Constants.CURRENT_DIR_PATH));
 
                 return;
 

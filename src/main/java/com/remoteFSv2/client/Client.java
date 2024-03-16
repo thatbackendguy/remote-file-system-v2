@@ -5,11 +5,16 @@ import com.remoteFSv2.client.handler.FileSystem;
 import com.remoteFSv2.client.handler.User;
 import com.remoteFSv2.utils.Common;
 import com.remoteFSv2.utils.Constants;
+import io.bretty.console.table.Alignment;
+import io.bretty.console.table.ColumnFormatter;
+import io.bretty.console.table.Precision;
+import io.bretty.console.table.Table;
 import org.json.JSONException;
 
 import java.io.IOException;
 import java.net.Socket;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -31,7 +36,7 @@ public class Client
             Scanner sc = new Scanner(System.in);
 
             System.out.println("--------------------");
-            System.out.println("\t\tMenu");
+            System.out.println("" + Constants.DOUBLE_TAB + "Menu");
             System.out.println("--------------------");
             System.out.println("1. Login");
             System.out.println("2. Register");
@@ -57,7 +62,7 @@ public class Client
 
 
                             System.out.println("--------------------");
-                            System.out.println("\t\tLogin");
+                            System.out.println("" + Constants.DOUBLE_TAB + "Login");
                             System.out.println("--------------------");
 
                             System.out.print("Enter username: ");
@@ -92,7 +97,7 @@ public class Client
                             userHandler = new User(socket);
 
                             System.out.println("-----------------------");
-                            System.out.println("\t\tRegister");
+                            System.out.println("" + Constants.DOUBLE_TAB + "Register");
                             System.out.println("-----------------------");
 
                             username = Common.limitedLengthInputPrompt("username");
@@ -155,6 +160,32 @@ public class Client
 
     }
 
+    private static void printHelp()
+    {
+        var commands = new String[]{"ls","pwd","cd","rm","get","put","mkdir","rmdir","logout"};
+
+        var descriptions = new String[]{"List files","Get current working directory","Change Directory","Delete file","Download file","Upload file","Make Directory","Remove Directory","Logout"};
+
+        var examples = new String[]{"ls","pwd","cd <valid dir name>/..","rm <file name>","get <file name>","put <local file path>","mkdir <dir name>","rmdir <file name>","logout"};
+
+        ColumnFormatter<String> commandFormatter = ColumnFormatter.text(Alignment.LEFT, 10);
+
+        ColumnFormatter<String> descFormatter = ColumnFormatter.text(Alignment.LEFT, 30);
+
+        ColumnFormatter<String> exFormatter = ColumnFormatter.text(Alignment.LEFT, 25);
+
+        Table.Builder builder = new Table.Builder("Command", commands, commandFormatter);
+
+        builder.addColumn("Description",descriptions,descFormatter);
+
+        builder.addColumn("Usage",examples,exFormatter);
+
+        Table table = builder.build();
+
+        System.out.println(table);
+
+    }
+
     public static void startFileSystem(String username)
     {
         Socket socket = null;
@@ -169,20 +200,7 @@ public class Client
         {
             Scanner sc = new Scanner(System.in);
 
-            System.out.println("--------------------");
-            System.out.println("\t\tMenu");
-            System.out.println("--------------------");
-            System.out.println("ls\t\t==>\t\tList files");
-            System.out.println("pwd\t\t==>\t\tGet current working directory");
-            System.out.println("get\t\t==>\t\tDownload file");
-            System.out.println("put\t\t==>\t\tUpload file");
-            System.out.println("rm\t\t==>\t\tDelete file");
-            System.out.println("mkdir\t==>\t\tMake Directory");
-            System.out.println("rmdir\t==>\t\tRemove Directory");
-            System.out.println("cd\t\t==>\t\tChange Directory");
-            System.out.println("back\t==>\t\tGo back one directory");
-            System.out.println("logout\t==>\t\tLogout");
-            System.out.print("Enter your choice: ");
+            System.out.print("Enter command >> ");
 
             try
             {
@@ -190,15 +208,29 @@ public class Client
 
                 choice = choice.toLowerCase();
 
-                var input = "";
+                var parts = choice.split(" ", 2);
 
-                switch(choice)
+                var command = parts[0];
+
+                var argument = parts.length > 1 ? parts[1] : "";
+
+                switch(command)
                 {
-                    // LIST FILES OF SERVER
-                    case "pwd":
-                        System.out.println("Current working directory: " + currPath);
+                    // PRINTS LIST OF AVAILABLE COMMAND
+                    case "help":
+
+                        Client.printHelp();
+
                         break;
 
+                    // PRINT CURRENT WORKING DIR
+                    case "pwd":
+
+                        System.out.println("Current working directory: " + currPath);
+
+                        break;
+
+                    // LIST FILES FROM CURRENT DIR
                     case Constants.LIST:
 
                         socket = clientSocket.connectServer();
@@ -214,26 +246,22 @@ public class Client
                     // DOWNLOAD FILE FROM SERVER
                     case Constants.DOWNLOAD:
 
-                        socket = clientSocket.connectServer();
-
-                        fileSystem = new FileSystem(User.userData.get(username), socket);
-
-                        fileSystem.listFiles();
-
-                        System.out.print("Enter file name to download or (0) to exit: ");
-
-                        input = sc.nextLine();
-
-                        if(input.equals("0"))
+                        if(argument.isEmpty())
                         {
-                            fileSystem.close();
+                            System.out.println(Constants.CLIENT + Constants.INVALID_INPUT);
 
                             break;
                         }
                         else
                         {
-                            fileSystem.requestDownload(input);
+                            socket = clientSocket.connectServer();
+
+                            fileSystem = new FileSystem(User.userData.get(username), socket);
+
+                            fileSystem.requestDownload(argument);
+
                         }
+
                         fileSystem.close();
 
                         break;
@@ -241,24 +269,22 @@ public class Client
                     // UPLOAD FILE TO SERVER
                     case Constants.UPLOAD:
 
-                        socket = clientSocket.connectServer();
-
-                        fileSystem = new FileSystem(User.userData.get(username), socket);
-
-                        System.out.print("Enter your complete file path or (0) to exit: ");
-
-                        input = sc.nextLine();
-
-                        if(input.equals("0"))
+                        if(argument.isEmpty())
                         {
-                            fileSystem.close();
+                            System.out.println(Constants.CLIENT + Constants.INVALID_INPUT);
 
                             break;
                         }
                         else
                         {
-                            fileSystem.requestUpload(input);
+                            socket = clientSocket.connectServer();
+
+                            fileSystem = new FileSystem(User.userData.get(username), socket);
+
+                            fileSystem.requestUpload(argument);
+
                         }
+
                         fileSystem.close();
 
                         break;
@@ -266,28 +292,20 @@ public class Client
                     // DELETE FILE FROM SERVER
                     case Constants.REMOVE_FILE:
 
-                        socket = clientSocket.connectServer();
-
-                        fileSystem = new FileSystem(User.userData.get(username), socket);
-
-                        var dirNotEmpty = fileSystem.listFiles();
-
-                        if(dirNotEmpty)
+                        if(argument.isEmpty())
                         {
-                            System.out.print("Enter file name or (0) to exit: ");
+                            System.out.println(Constants.CLIENT + Constants.INVALID_INPUT);
 
-                            input = sc.nextLine();
+                            break;
+                        }
+                        else
+                        {
+                            socket = clientSocket.connectServer();
 
-                            if(input.equals("0"))
-                            {
-                                fileSystem.close();
+                            fileSystem = new FileSystem(User.userData.get(username), socket);
 
-                                break;
-                            }
-                            else
-                            {
-                                fileSystem.deleteFile(input);
-                            }
+                            fileSystem.deleteFile(argument);
+
                         }
 
                         fileSystem.close();
@@ -296,23 +314,20 @@ public class Client
 
                     case Constants.MKDIR:
 
-                        socket = clientSocket.connectServer();
-
-                        fileSystem = new FileSystem(User.userData.get(username), socket);
-
-                        System.out.print("Enter folder name or (0) to exit: ");
-
-                        input = sc.nextLine();
-
-                        if(input.equals("0"))
+                        if(argument.isEmpty())
                         {
-                            fileSystem.close();
+                            System.out.println(Constants.CLIENT + Constants.INVALID_INPUT);
 
                             break;
                         }
                         else
                         {
-                            fileSystem.makeOrRemoveDir(Constants.MKDIR, input, currPath);
+                            socket = clientSocket.connectServer();
+
+                            fileSystem = new FileSystem(User.userData.get(username), socket);
+
+                            fileSystem.makeOrRemoveDir(Constants.MKDIR, argument, currPath);
+
                         }
 
                         fileSystem.close();
@@ -321,23 +336,20 @@ public class Client
 
                     case Constants.RMDIR:
 
-                        socket = clientSocket.connectServer();
-
-                        fileSystem = new FileSystem(User.userData.get(username), socket);
-
-                        System.out.print("Enter folder name or (0) to exit: ");
-
-                        input = sc.nextLine();
-
-                        if(input.equals("0"))
+                        if(argument.isEmpty())
                         {
-                            fileSystem.close();
+                            System.out.println(Constants.CLIENT + Constants.INVALID_INPUT);
 
                             break;
                         }
                         else
                         {
-                            fileSystem.makeOrRemoveDir(Constants.RMDIR, input, currPath);
+                            socket = clientSocket.connectServer();
+
+                            fileSystem = new FileSystem(User.userData.get(username), socket);
+
+                            fileSystem.makeOrRemoveDir(Constants.RMDIR, argument, currPath);
+
                         }
 
                         fileSystem.close();
@@ -346,35 +358,25 @@ public class Client
 
                     case Constants.CD:
 
-                        socket = clientSocket.connectServer();
-
-                        fileSystem = new FileSystem(User.userData.get(username), socket);
-
-                        System.out.print("Enter folder name/path or (0) to exit: ");
-
-                        input = sc.nextLine();
-
-                        if(input.equals("0"))
+                        if(argument.isEmpty()) // go to root directory
                         {
-                            fileSystem.close();
-
-                            break;
+                            currPath = "/";
+                        }
+                        else if(argument.equals("..")) // go back to parent directory
+                        {
+                            if(currPath.equals("/"))
+                                break;
+                            currPath = String.valueOf(Path.of(currPath).getParent());
                         }
                         else
                         {
-                            fileSystem.changeDirectory(input, currPath);
-                        }
+                            socket = clientSocket.connectServer();
 
-                        fileSystem.close();
+                            fileSystem = new FileSystem(User.userData.get(username), socket);
 
-                        break;
+                            fileSystem.changeDirectory(argument, currPath);
 
-                    case Constants.BACK:
-                        if(!currPath.equals("/"))
-                        {
-                            currPath = String.valueOf(Path.of(currPath).getParent());
-                        } else {
-                            System.out.println(Constants.SERVER + "Already in root folder!");
+                            fileSystem.close();
                         }
 
                         break;

@@ -28,6 +28,13 @@
             <version>4.4.0</version>
         </dependency>
 
+<!--        table formatter-->
+        <dependency>
+            <groupId>io.bretty</groupId>
+            <artifactId>console-table-builder</artifactId>
+            <version>1.2</version>
+        </dependency>
+
     </dependencies>
 
 </project>

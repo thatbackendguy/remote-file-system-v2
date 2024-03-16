@@ -164,10 +164,16 @@ public class FileSystem implements Closeable
             request.clear();
 
             request.put(Constants.TOKEN, token);
+
             request.put(Constants.COMMAND, Constants.DELETE);
+
             request.put(Constants.FILE_NAME, fileName);
 
+            request.put(Constants.CURRENT_DIR_PATH, Client.currPath);
+
+
             writer.println(request.toString());
+
             var response = reader.readLine();
 
             var resJSON = new JSONObject(response);

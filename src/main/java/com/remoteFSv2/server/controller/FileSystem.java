@@ -60,7 +60,7 @@ public class FileSystem
                 }
                 else
                 {
-                    response.put(Constants.MESSAGE, Constants.SERVER + Constants.EMPTY_DIRECTORY);
+                    response.put(Constants.MESSAGE, Constants.SERVER + currPath + " " + Constants.EMPTY_DIRECTORY);
 
                     response.put(Constants.STATUS_CODE, 1);
                 }
@@ -100,11 +100,11 @@ public class FileSystem
 
                     if(success)
                     {
-                        System.out.println(Constants.SERVER + Constants.FILE_SENT_SUCCESS);
+                        System.out.println(Constants.SERVER + fileName + " " + Constants.FILE_SENT_SUCCESS);
                     }
                     else
                     {
-                        System.out.println(Constants.SERVER + Constants.FILE_SENT_ERROR);
+                        System.out.println(Constants.SERVER + fileName + " " + Constants.FILE_SENT_ERROR);
                     }
 
 
@@ -131,24 +131,27 @@ public class FileSystem
                 var dataInputStream = new DataInputStream(clientConnection.clientSocket.getInputStream());
 
                 var filePath = Config.ROOT_DIR_SERVER + "/" + username + currPath + "/" + fileName;
+
                 var success = Common.receiveFile(dataInputStream, filePath);
+
                 if(success)
                 {
                     response.put(Constants.STATUS_CODE, 0);
 
-                    response.put(Constants.MESSAGE, Constants.SERVER + Constants.FILE_UPLOAD_SUCCESS);
+                    response.put(Constants.MESSAGE, Constants.SERVER + fileName + " " + Constants.FILE_UPLOAD_SUCCESS);
                 }
                 else
                 {
                     response.put(Constants.STATUS_CODE, 1);
 
-                    response.put(Constants.MESSAGE, Constants.SERVER + Constants.FILE_UPLOAD_ERROR);
+                    response.put(Constants.MESSAGE, Constants.SERVER + fileName + " " + Constants.FILE_UPLOAD_ERROR);
                 }
+
             } catch(IOException e)
             {
                 response.put(Constants.STATUS_CODE, 1);
 
-                response.put(Constants.MESSAGE, Constants.SERVER + Constants.FILE_UPLOAD_ERROR);
+                response.put(Constants.MESSAGE, Constants.SERVER + fileName + " " + Constants.FILE_UPLOAD_ERROR);
             }
 
             clientConnection.send(response.toString());
@@ -156,7 +159,7 @@ public class FileSystem
     }
 
 
-    public void deleteFile(String token, String fileName)
+    public void deleteFile(String token, String fileName, String currPath)
     {
         response.clear();
 
@@ -166,7 +169,7 @@ public class FileSystem
 
             if(username != null)
             {
-                var file = Paths.get(rootDirectory, username, fileName);
+                var file = Paths.get(rootDirectory, username,currPath, fileName);
 
                 if(Common.validateFilePath(file))
                 {
@@ -174,16 +177,16 @@ public class FileSystem
 
                     response.put(Constants.STATUS_CODE, 0);
 
-                    response.put(Constants.MESSAGE, Constants.SERVER + Constants.FILE_DELETE_SUCCESS);
+                    response.put(Constants.MESSAGE, Constants.SERVER + fileName + " " + Constants.FILE_DELETE_SUCCESS);
 
                 }
                 else
                 {
-                    System.out.println(Constants.SERVER + Constants.FILE_NOT_FOUND);
+                    System.out.println(Constants.SERVER + fileName + " " + Constants.FILE_NOT_FOUND);
 
                     response.put(Constants.STATUS_CODE, 1);
 
-                    response.put(Constants.MESSAGE, Constants.SERVER + Constants.FILE_NOT_FOUND);
+                    response.put(Constants.MESSAGE, Constants.SERVER + fileName + " " + Constants.FILE_NOT_FOUND);
                 }
             }
             else
@@ -198,9 +201,9 @@ public class FileSystem
         {
             response.put(Constants.STATUS_CODE, 1);
 
-            response.put(Constants.MESSAGE, Constants.SERVER + Constants.FILE_DELETE_ERROR);
+            response.put(Constants.MESSAGE, Constants.SERVER + fileName + " " + Constants.FILE_DELETE_ERROR);
 
-            System.out.println(Constants.SERVER + Constants.FILE_DELETE_ERROR + e.getMessage());
+            System.out.println(Constants.SERVER + fileName + " " + Constants.FILE_DELETE_ERROR + e.getMessage());
         }
 
         clientConnection.send(response.toString());
@@ -222,7 +225,7 @@ public class FileSystem
 
                 response.put(Constants.STATUS_CODE, 0);
 
-                response.put(Constants.MESSAGE, Constants.SERVER + Constants.MKDIR_SUCCESS);
+                response.put(Constants.MESSAGE, Constants.SERVER + dirName + " " + Constants.MKDIR_SUCCESS);
 
             } catch(FileAlreadyExistsException e)
             {
@@ -230,7 +233,7 @@ public class FileSystem
 
                 response.put(Constants.STATUS_CODE, 1);
 
-                response.put(Constants.MESSAGE, Constants.SERVER + Constants.DIR_ALREADY_EXISTS);
+                response.put(Constants.MESSAGE, Constants.SERVER + dirName + " " + Constants.DIR_ALREADY_EXISTS);
 
                 clientConnection.send(response.toString());
 
@@ -241,7 +244,7 @@ public class FileSystem
 
                 response.put(Constants.STATUS_CODE, 1);
 
-                response.put(Constants.MESSAGE, Constants.SERVER + Constants.INVALID_PATH);
+                response.put(Constants.MESSAGE, Constants.SERVER + currPath + " " + Constants.INVALID_PATH);
             }
         }
         else
@@ -273,7 +276,7 @@ public class FileSystem
 
                     response.put(Constants.STATUS_CODE, 0);
 
-                    response.put(Constants.MESSAGE, Constants.SERVER + Constants.DIR_DELETE_SUCCESS);
+                    response.put(Constants.MESSAGE, Constants.SERVER + dirName + " " + Constants.DIR_DELETE_SUCCESS);
 
                 } catch(IOException e)
                 {
@@ -282,7 +285,7 @@ public class FileSystem
 
                     response.put(Constants.STATUS_CODE, 1);
 
-                    response.put(Constants.MESSAGE, Constants.SERVER + Constants.DIR_DELETE_ERROR);
+                    response.put(Constants.MESSAGE, Constants.SERVER + dirName + " " + Constants.DIR_DELETE_ERROR);
                 }
             }
             else
@@ -292,7 +295,7 @@ public class FileSystem
 
                 response.put(Constants.STATUS_CODE, 1);
 
-                response.put(Constants.MESSAGE, Constants.SERVER + Constants.DIR_DELETE_ERROR);
+                response.put(Constants.MESSAGE, Constants.SERVER + currPath + " " + Constants.INVALID_PATH);
             }
 
 
@@ -332,7 +335,7 @@ public class FileSystem
 
                 response.put(Constants.STATUS_CODE, 1);
 
-                response.put(Constants.MESSAGE, Constants.SERVER + Constants.INVALID_PATH);
+                response.put(Constants.MESSAGE, Constants.SERVER  + currPath+"/"+destPath + " " + Constants.INVALID_PATH);
             }
 
 

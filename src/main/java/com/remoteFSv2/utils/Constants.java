@@ -76,6 +76,7 @@ public class Constants
 
     // File Transfer Messages
     public static final String FILE_SENT_SUCCESS = "File sent successfully!";
+    public static final String DOUBLE_TAB = "\t\t";
     public static final String FILE_SENT_ERROR = "Error! File not sent!";
 
     public static final String FILE_UPLOAD_ERROR = "Error uploading file!";

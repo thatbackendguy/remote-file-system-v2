@@ -60,8 +60,6 @@ public class User
 
                 System.out.println(resJSON.getString(Constants.MESSAGE));
 
-                System.out.println(userData);
-
                 return true;
             }
             else
