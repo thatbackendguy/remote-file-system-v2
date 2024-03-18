@@ -48,7 +48,9 @@ public class User
 
             request.put(Constants.TOKEN, userData.getOrDefault(username, ""));
 
-            var response = sendRequest(request.toString());
+            writer.println(request.toString());
+
+            var response = reader.readLine();
 
             JSONObject resJSON = new JSONObject(response);
 
@@ -79,7 +81,9 @@ public class User
 
             request.put("password", password.trim());
 
-            var response = sendRequest(request.toString());
+            writer.println(request.toString());
+
+            var response = reader.readLine();
 
             JSONObject resJSON = new JSONObject(response);
 
@@ -101,12 +105,6 @@ public class User
         return false;
     }
 
-    public String sendRequest(String request) throws IOException, NullPointerException
-    {
-        writer.println(request); // Send request to server
-
-        return reader.readLine(); // Receive response from server
-    }
 
     public void close() throws IOException
     {

@@ -18,7 +18,7 @@ public class Config
 
     public static final int SERVER_PORT = 12345;
 
-    public static final int CHUNK_SIZE = 4096;
+    public static final int CHUNK_SIZE = 8192;
 
     public static final String JWT_SECRET = "remoteFS";
 
