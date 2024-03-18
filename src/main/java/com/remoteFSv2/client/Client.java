@@ -152,10 +152,12 @@ public class Client
                 System.out.println(Constants.CLIENT + Constants.CONNECTION_ERROR);
 
                 break;
-
             } catch(InputMismatchException e)
             {
                 System.out.println(Constants.INVALID_INPUT + " Valid range = [0-2]");
+            } catch(NullPointerException e)
+            {
+                System.out.println(Constants.CLIENT + Constants.SERVER_DOWN);
             }
         }
 
