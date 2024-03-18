@@ -5,7 +5,7 @@ import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Scanner;
 
-public class Common
+public class Util
 {
     public static void removeDirRecursively(String filePath) throws IOException
     {

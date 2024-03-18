@@ -2,7 +2,7 @@ package com.remoteFSv2;
 
 import com.remoteFSv2.client.Client;
 import com.remoteFSv2.server.Server;
-import com.remoteFSv2.utils.Common;
+import com.remoteFSv2.utils.Util;
 import com.remoteFSv2.utils.Config;
 import com.remoteFSv2.utils.Constants;
 
@@ -26,7 +26,7 @@ public class BootStrap
             {
                 try
                 {
-                    Common.removeDirRecursively(Config.ROOT_DIR_SERVER);
+                    Util.removeDirRecursively(Config.ROOT_DIR_SERVER);
 
                     System.out.println(Constants.SERVER + "Cleanup Successful!");
 
@@ -47,7 +47,7 @@ public class BootStrap
             {
                 try
                 {
-                    Common.removeDirRecursively(Config.ROOT_DIR_CLIENT);
+                    Util.removeDirRecursively(Config.ROOT_DIR_CLIENT);
 
                     System.out.println(Constants.CLIENT + "Cleanup Successful!");
 

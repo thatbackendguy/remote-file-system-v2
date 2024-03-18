@@ -1,7 +1,7 @@
 package com.remoteFSv2.client.handler;
 
 import com.remoteFSv2.client.Client;
-import com.remoteFSv2.utils.Common;
+import com.remoteFSv2.utils.Util;
 import com.remoteFSv2.utils.Config;
 import com.remoteFSv2.utils.Constants;
 import org.json.JSONObject;
@@ -82,7 +82,7 @@ public class FileSystem implements Closeable
 
         var dataInputStream = new DataInputStream(socket.getInputStream());
 
-        var success = Common.receiveFile(dataInputStream, Config.ROOT_DIR_CLIENT + fileName);
+        var success = Util.receiveFile(dataInputStream, Config.ROOT_DIR_CLIENT + fileName);
 
         if(success)
         {
@@ -100,7 +100,7 @@ public class FileSystem implements Closeable
     {
         Path filePath = Paths.get(localPath);
 
-        if(Common.validateFilePath(filePath))
+        if(Util.validateFilePath(filePath))
         {
             try
             {
@@ -124,7 +124,7 @@ public class FileSystem implements Closeable
 
                 FileInputStream fileInputStream = new FileInputStream(file);
 
-                var success = Common.sendFile(fileInputStream, dataOutputStream, file);
+                var success = Util.sendFile(fileInputStream, dataOutputStream, file);
 
                 var response = reader.readLine();
 

@@ -1,7 +1,7 @@
 package com.remoteFSv2.server.controller;
 
 import com.remoteFSv2.server.handler.ClientConnection;
-import com.remoteFSv2.utils.Common;
+import com.remoteFSv2.utils.Util;
 import com.remoteFSv2.utils.Config;
 import com.remoteFSv2.utils.Constants;
 import com.remoteFSv2.utils.JWTUtil;
@@ -86,7 +86,7 @@ public class FileSystem
         {
             var filePath = Paths.get(rootDirectory, username, currPath, fileName);
 
-            if(Common.validateFilePath(filePath)) // if valid file path
+            if(Util.validateFilePath(filePath)) // if valid file path
             {
                 try
                 {
@@ -96,7 +96,7 @@ public class FileSystem
 
                     var dataOutputStream = new DataOutputStream(clientConnection.clientSocket.getOutputStream());
 
-                    var success = Common.sendFile(fileInputStream, dataOutputStream, file);
+                    var success = Util.sendFile(fileInputStream, dataOutputStream, file);
 
                     if(success)
                     {
@@ -131,7 +131,7 @@ public class FileSystem
 
                 var filePath = Config.ROOT_DIR_SERVER + username + currPath + "/" + fileName;
 
-                var success = Common.receiveFile(dataInputStream, filePath);
+                var success = Util.receiveFile(dataInputStream, filePath);
 
                 if(success)
                 {
@@ -170,7 +170,7 @@ public class FileSystem
             {
                 var file = Paths.get(rootDirectory, username, currPath, fileName);
 
-                if(Common.validateFilePath(file))
+                if(Util.validateFilePath(file))
                 {
                     Files.deleteIfExists(file);
 
@@ -271,7 +271,7 @@ public class FileSystem
             {
                 try
                 {
-                    Common.removeDirRecursively(String.valueOf(dirPath));
+                    Util.removeDirRecursively(String.valueOf(dirPath));
 
                     response.put(Constants.STATUS_CODE, 0);
 

@@ -3,7 +3,7 @@ package com.remoteFSv2.client;
 import com.remoteFSv2.client.connection.ClientSocket;
 import com.remoteFSv2.client.handler.FileSystem;
 import com.remoteFSv2.client.handler.User;
-import com.remoteFSv2.utils.Common;
+import com.remoteFSv2.utils.Util;
 import com.remoteFSv2.utils.Constants;
 import io.bretty.console.table.Alignment;
 import io.bretty.console.table.ColumnFormatter;
@@ -100,11 +100,11 @@ public class Client
                             System.out.println("\tRegister");
                             System.out.println("-----------------------");
 
-                            username = Common.limitedLengthInputPrompt("username");
+                            username = Util.limitedLengthInputPrompt("username");
 
                             if(username.length() >= 6)
                             {
-                                password = Common.limitedLengthInputPrompt("password");
+                                password = Util.limitedLengthInputPrompt("password");
 
                                 if(password.length() >= 6)
                                 {
