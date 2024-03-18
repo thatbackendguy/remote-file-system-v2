@@ -223,6 +223,12 @@ public class Client
                     // PRINTS LIST OF AVAILABLE COMMAND
                     case "help":
 
+                        if(!argument.isEmpty())
+                        {
+                            System.out.println(Constants.CLIENT + Constants.INVALID_INPUT);
+                            break;
+                        }
+
                         Client.printHelp();
 
                         break;
@@ -230,12 +236,25 @@ public class Client
                     // PRINT CURRENT WORKING DIR
                     case "pwd":
 
+                        if(!argument.isEmpty())
+                        {
+                            System.out.println(Constants.CLIENT + Constants.INVALID_INPUT);
+                            break;
+                        }
+
                         System.out.println("Current working directory: " + currPath);
 
                         break;
 
                     // LIST FILES FROM CURRENT DIR
                     case Constants.LIST:
+
+                        if(!argument.isEmpty())
+                        {
+                            System.out.println(Constants.CLIENT + Constants.INVALID_INPUT);
+                            break;
+                        }
+
 
                         socket = clientSocket.connectServer();
 
@@ -374,6 +393,10 @@ public class Client
                             }
                             currPath = String.valueOf(Path.of(currPath).getParent());
                         }
+                        else if(argument.equals(".")) // current path
+                        {
+                            break;
+                        }
                         else
                         {
                             socket = clientSocket.connectServer();
@@ -389,6 +412,14 @@ public class Client
 
                     // LOGOUT
                     case Constants.LOGOUT:
+
+                        if(!argument.isEmpty())
+                        {
+                            System.out.println(Constants.CLIENT + Constants.INVALID_INPUT);
+                            break;
+                        }
+
+                        currPath="/";
 
                         return;
 
