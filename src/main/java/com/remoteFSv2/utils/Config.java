@@ -11,7 +11,7 @@ public class Config
 
     public static final int CLIENT_PORT = 12345;
 
-    public static final String HOST = "localhost";
+    public static final String HOST = "10.20.40.227";
 
     public static final String ROOT_DIR_SERVER = "/home/yash/IdeaProjects/remoteFSv2/src/main/resources/ServerFS/";
 //    public static final String ROOT_DIR_SERVER = Common.getDirName() + "/ServerFS/";

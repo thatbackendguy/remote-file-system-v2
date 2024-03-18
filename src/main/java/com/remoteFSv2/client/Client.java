@@ -60,7 +60,6 @@ public class Client
                         {
                             userHandler = new User(socket);
 
-
                             System.out.println("--------------------");
                             System.out.println("\tLogin");
                             System.out.println("--------------------");
@@ -210,11 +209,11 @@ public class Client
             {
                 var choice = sc.nextLine();
 
-                choice = choice.toLowerCase();
-
                 var parts = choice.split(" ", 2);
 
                 var command = parts[0];
+
+                command = command.toLowerCase();
 
                 var argument = parts.length > 1 ? parts[1] : "";
 
@@ -419,7 +418,7 @@ public class Client
                             break;
                         }
 
-                        currPath="/";
+                        currPath = "/";
 
                         return;
 
