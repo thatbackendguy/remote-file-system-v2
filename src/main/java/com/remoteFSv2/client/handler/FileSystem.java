@@ -65,7 +65,7 @@ public class FileSystem implements Closeable
         {
             System.out.println(resJSON.getString(Constants.MESSAGE));
 
-            Client.logger.error(Constants.SERVER + resJSON.get(Constants.MESSAGE));
+            Client.logger.error(resJSON.getString(Constants.MESSAGE));
 
             return false;
         }
@@ -128,9 +128,9 @@ public class FileSystem implements Closeable
 
         var resJSON = new JSONObject(response);
 
-        System.out.println(resJSON.get(Constants.MESSAGE));
+        System.out.println(resJSON.getString(Constants.MESSAGE));
 
-        Client.logger.info(Constants.SERVER + resJSON.get(Constants.MESSAGE));
+        Client.logger.info(resJSON.getString(Constants.MESSAGE));
 
     }
 
@@ -160,7 +160,7 @@ public class FileSystem implements Closeable
         {
             System.out.println(resJSON.get(Constants.MESSAGE));
 
-            Client.logger.error(Constants.SERVER + resJSON.get(Constants.MESSAGE));
+            Client.logger.info(resJSON.getString(Constants.MESSAGE));
         }
     }
 
@@ -208,7 +208,7 @@ public class FileSystem implements Closeable
                     writer.println(request.toString());
                 }
 
-                Client.logger.info("{} upload finished!", fileName);
+                Client.logger.info("{} uploaded successfully!", fileName);
 
                 request.put(Constants.STATUS_CODE, Constants.SUCCESS);
 
@@ -220,7 +220,7 @@ public class FileSystem implements Closeable
 
                 System.out.println(resJSON.getString(Constants.MESSAGE));
 
-                Client.logger.info(Constants.SERVER + resJSON.getString(Constants.MESSAGE));
+                Client.logger.info(resJSON.getString(Constants.MESSAGE));
 
             } catch(FileNotFoundException e)
             {
@@ -294,7 +294,7 @@ public class FileSystem implements Closeable
 
                 System.out.println(resJSON.getString(Constants.MESSAGE));
 
-                Client.logger.info("{} download completed!", fileName);
+                Client.logger.info("{} downloaded successfully!", fileName);
             }
             else
             {

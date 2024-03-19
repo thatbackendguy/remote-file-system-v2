@@ -106,7 +106,9 @@ fabric.properties
 target
 
 # resource folder
-src/main/resources
+src/main/resources/META-INF
+src/main/resources/ServerFS
+src/main/resources/ClientFS
 
 test
 =======
@@ -149,5 +151,4 @@ build/
 ### Mac OS ###
 .DS_Store
 
-resources
 >>>>>>> 985eec0 (Initial Commit (IDEA))
