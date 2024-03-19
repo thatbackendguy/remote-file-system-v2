@@ -14,6 +14,13 @@ public class Constants
 
     public static final String REGISTER = "REGISTER";
 
+    // status of req/res
+    public static final String SUCCESS = "success";
+
+    public static final String PENDING = "pending";
+
+    public static final String FAILED = "failed";
+
     // commands
 
     public static final String LIST = "ls";
@@ -27,8 +34,6 @@ public class Constants
     public static final String DELETE = "rm";
 
     public static final String MKDIR = "mkdir";
-
-    public static final String BACK = "back";
 
     public static final String CD = "cd";
 
@@ -63,8 +68,6 @@ public class Constants
     public static final String USER_NOT_FOUND = "User doesn't exists!";
 
     public static final String JWT_INVALID = "Invalid JWT Token!";
-
-    public static final String JWT_EMPTY = "JWT Token not found!";
 
     public static final String INVALID_CREDENTIALS = "Invalid username or password!";
 
@@ -109,11 +112,9 @@ public class Constants
 
     public static final String SERVER_DOWN = "Server Down!";
 
-    public static final String IO_ERROR = "Error in Input/Output stream!";
-
     // Client Messages
 
-    public static final String CLIENT_START_ERROR = "Error starting client!";
+    public static final String CLIENT_STOP_ERROR = "Error stopping client!";
 
     public static final String CONNECTION_ERROR = "Error connecting to server!";
 

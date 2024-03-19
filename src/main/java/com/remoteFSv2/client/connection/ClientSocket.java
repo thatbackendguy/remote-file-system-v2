@@ -45,7 +45,13 @@ public class ClientSocket
             {
                 System.out.println(Constants.CLIENT + "Error!\nStatus: FATAL\nMessage: " + ex.getMessage());
             }
-            Client.start();
+            try
+            {
+                Client.start();
+            } catch(NullPointerException | IOException exception)
+            {
+                System.out.println(Constants.CLIENT + Constants.SERVER_START_ERROR);
+            }
         }
 
         return null;

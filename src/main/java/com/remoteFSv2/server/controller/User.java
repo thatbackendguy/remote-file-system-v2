@@ -21,7 +21,7 @@ public class User
 
     public static ConcurrentHashMap<String, String> userCredentials = new ConcurrentHashMap<>();
 
-    public static ConcurrentHashMap<String, String> usersMap = new ConcurrentHashMap<>();
+//    public static ConcurrentHashMap<String, String> usersMap = new ConcurrentHashMap<>();
 
 
     public User(ClientConnection clientConnection)
@@ -32,7 +32,6 @@ public class User
 
     public void registerUser(String username, String password)
     {
-        response.clear();
 
         if(userCredentials.containsKey(username))
         {
@@ -46,13 +45,11 @@ public class User
         {
             userCredentials.put(username, password);
 
-            var token = JWTUtil.generateToken(username);
-
-            usersMap.put(username, token);
+//            usersMap.put(username, token);
 
             response.put(Constants.STATUS_CODE, 0);
 
-            response.put(Constants.TOKEN, token);
+
 
             response.put(Constants.MESSAGE, Constants.SERVER + Constants.REGISTRATION_SUCCESS);
 
@@ -72,7 +69,7 @@ public class User
     }
 
 
-    public void loginUser(String username, String password, String token)
+    public void loginUser(String username, String password)
     {
         if(userCredentials.isEmpty())
         {
@@ -84,17 +81,19 @@ public class User
         }
         if(userCredentials.containsKey(username)) // user exists
         {
-            if(username.equals(JWTUtil.verifyToken(token))) // token match
-            {
                 if(password.equals(userCredentials.get(username))) // password match
                 {
+                    var token = JWTUtil.generateToken(username);
+
+                    response.put(Constants.TOKEN, token);
+
                     response.put(Constants.STATUS_CODE, 0);
 
                     response.put(Constants.TOKEN, token);
 
                     response.put(Constants.MESSAGE, Constants.SERVER + Constants.LOGIN_SUCCESS);
 
-                    usersMap.put(username, token);
+//                    usersMap.put(username, token);
 
                     clientConnection.send(response.toString());
                 }
@@ -107,23 +106,7 @@ public class User
                     clientConnection.send(response.toString());
                 }
 
-            }
-            else if(token.isEmpty()) // token doesn't exists
-            {
-                response.put(Constants.STATUS_CODE, 1);
 
-                response.put(Constants.MESSAGE, Constants.SERVER + Constants.JWT_EMPTY);
-
-                clientConnection.send(response.toString());
-            }
-            else // JWT Invalid
-            {
-                response.put(Constants.STATUS_CODE, 1);
-
-                response.put(Constants.MESSAGE, Constants.SERVER + Constants.JWT_INVALID);
-
-                clientConnection.send(response.toString());
-            }
         }
         else // User doesn't exists
         {

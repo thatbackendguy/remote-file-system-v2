@@ -46,8 +46,6 @@ public class User
 
             request.put("password", password.trim());
 
-            request.put(Constants.TOKEN, userData.getOrDefault(username, ""));
-
             writer.println(request.toString());
 
             var response = reader.readLine();
@@ -73,8 +71,6 @@ public class User
         }
         else if(command.equals(Constants.REGISTER))
         {
-            request.clear();
-
             request.put(Constants.COMMAND, Constants.REGISTER);
 
             request.put("username", username.trim());
@@ -90,8 +86,6 @@ public class User
             if(resJSON.getInt(Constants.STATUS_CODE) == 0)
             {
                 System.out.println(resJSON.getString(Constants.MESSAGE));
-
-                userData.put(username, resJSON.getString(Constants.TOKEN));
 
                 return true;
             }

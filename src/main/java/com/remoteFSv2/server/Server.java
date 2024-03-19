@@ -14,7 +14,7 @@ import com.remoteFSv2.utils.Constants;
 
 public class Server
 {
-    public static void start()
+    public static void start() throws IOException,NullPointerException
     {
         ServerSocket serverSocket = null;
 
@@ -56,8 +56,6 @@ public class Server
 
         } finally
         {
-            try
-            {
                 clientConnection.close();
 
                 serverSocket.close(); // Close the server socket
@@ -65,16 +63,6 @@ public class Server
                 threadPoolExecutor.shutdown();
 
                 System.out.println(Constants.SERVER + Constants.SERVER_STOP);
-
-            } catch(NullPointerException npe)
-            {
-                System.out.println(Constants.SERVER + Constants.SERVER_STOP_ERROR);
-
-            } catch(IOException e)
-            {
-                System.out.println(Constants.SERVER + Constants.SERVER_STOP_ERROR + e.getMessage());
-            }
-
         }
 
     }

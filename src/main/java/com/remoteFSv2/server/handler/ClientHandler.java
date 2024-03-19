@@ -89,7 +89,7 @@ public class ClientHandler extends Thread
 
             case Constants.LOGIN:
 
-                userController.loginUser(request.getString("username"), request.getString("password"), request.getString(Constants.TOKEN));
+                userController.loginUser(request.getString("username"), request.getString("password"));
 
                 return;
 
@@ -101,13 +101,13 @@ public class ClientHandler extends Thread
 
             case Constants.DOWNLOAD:
 
-                fileSystemController.invokeSendFile(request.getString(Constants.TOKEN), request.getString(Constants.CURRENT_DIR_PATH), request.getString(Constants.FILE_NAME));
+                fileSystemController.sendFile(request.getString(Constants.TOKEN), request.getString(Constants.CURRENT_DIR_PATH), request.getString(Constants.FILE_NAME));
 
                 return;
 
             case Constants.UPLOAD:
 
-                fileSystemController.invokeReceiveFile(request.getString(Constants.TOKEN), request.getString(Constants.CURRENT_DIR_PATH), request.getString(Constants.FILE_NAME));
+                fileSystemController.receiveFile(request);
 
                 return;
 

@@ -90,7 +90,7 @@ public class Util
             // read file size
             var size = dataInputStream.readLong();
 
-            var buffer = new byte[Config.CHUNK_SIZE]; // 4KB
+            var buffer = new byte[Config.CHUNK_SIZE]; // 8KB
 
             while(size > 0 && (bytes = dataInputStream.read(buffer, 0, (int) Math.min(buffer.length, size))) != -1)
             {

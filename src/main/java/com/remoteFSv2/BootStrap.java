@@ -20,45 +20,44 @@ public class BootStrap
         {
             if(Objects.equals(args[0], "server"))
             {
-                Server.start();
+                try
+                {
+                    Server.start();
+
+                } catch(NullPointerException | IOException e)
+                {
+                    System.out.println(Constants.SERVER + Constants.SERVER_STOP_ERROR);
+                }
+
             }
-            else if(Objects.equals(args[0], "fresh-server"))
+            else if(Objects.equals(args[0], "client"))
+            {
+                try
+                {
+                    Client.start();
+
+                } catch(NullPointerException | IOException e)
+                {
+                    System.out.println(Constants.CLIENT + Constants.CONNECTION_ERROR);
+                }
+            }
+            else if(Objects.equals(args[0],"clean"))
             {
                 try
                 {
                     Util.removeDirRecursively(Config.ROOT_DIR_SERVER);
-
-                    System.out.println(Constants.SERVER + "Cleanup Successful!");
-
-                    Files.createDirectories(Path.of(Config.ROOT_DIR_SERVER));
-
-                    Server.start();
-
-                } catch(IOException e)
-                {
-                    System.out.println(Constants.SERVER + Constants.SERVER_START_ERROR);
-                }
-            }
-            else if(Objects.equals(args[0], "client"))
-            {
-                Client.start();
-            }
-            else if(Objects.equals(args[0], "fresh-client"))
-            {
-                try
-                {
                     Util.removeDirRecursively(Config.ROOT_DIR_CLIENT);
 
-                    System.out.println(Constants.CLIENT + "Cleanup Successful!");
-
+                    Files.createDirectories(Path.of(Config.ROOT_DIR_SERVER));
                     Files.createDirectories(Path.of(Config.ROOT_DIR_CLIENT));
 
-                    Client.start();
-
-                } catch(IOException e)
-                {
-                    System.out.println(Constants.CLIENT + Constants.CLIENT_START_ERROR);
+                    System.out.println("Cleanup Successful!");
                 }
+                catch(IOException e)
+                {
+                    System.out.println(Constants.SERVER + "Error in cleaning!");
+                }
+
             }
             else
             {
@@ -66,11 +65,9 @@ public class BootStrap
 
                 System.out.println("java -jar <name of executable> server");
 
-                System.out.println("java -jar <name of executable> fresh-server");
-
                 System.out.println("java -jar <name of executable> client");
 
-                System.out.println("java -jar <name of executable> fresh-client");
+                System.out.println("java -jar <name of executable> clean");
             }
         }
         else
@@ -79,11 +76,9 @@ public class BootStrap
 
             System.out.println("java -jar <name of executable> server");
 
-            System.out.println("java -jar <name of executable> fresh-server");
-
             System.out.println("java -jar <name of executable> client");
 
-            System.out.println("java -jar <name of executable> fresh-client");
+            System.out.println("java -jar <name of executable> clean");
         }
     }
 }

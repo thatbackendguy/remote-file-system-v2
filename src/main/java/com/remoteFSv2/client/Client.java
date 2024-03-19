@@ -9,6 +9,7 @@ import io.bretty.console.table.Alignment;
 import io.bretty.console.table.ColumnFormatter;
 import io.bretty.console.table.Table;
 import org.json.JSONException;
+import org.w3c.dom.ls.LSOutput;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -20,12 +21,13 @@ public class Client
 {
     public static String currPath = "/";
 
-    public static void start()
+    public static void start() throws IOException,NullPointerException
     {
         Socket socket = null;
 
         User userHandler = null;
 
+        // get instance of singleton class
         ClientSocket clientSocket = ClientSocket.getInstance();
 
         System.out.println("Welcome to the Remote File System!");
@@ -54,21 +56,21 @@ public class Client
                 {
                     // LOGIN
                     case 1:
+                        System.out.println("--------------------");
+                        System.out.println("\tLogin");
+                        System.out.println("--------------------");
+
+                        System.out.print("Enter username: ");
+                        username = sc.next();
+
+                        System.out.print("Enter password: ");
+                        password = sc.next();
+
                         socket = clientSocket.connectServer();
 
                         if(socket != null)
                         {
                             userHandler = new User(socket);
-
-                            System.out.println("--------------------");
-                            System.out.println("\tLogin");
-                            System.out.println("--------------------");
-
-                            System.out.print("Enter username: ");
-                            username = sc.next();
-
-                            System.out.print("Enter password: ");
-                            password = sc.next();
 
                             if(userHandler.authenticateUser(Constants.LOGIN, username, password))
                             {
@@ -143,21 +145,28 @@ public class Client
                         System.out.println(Constants.INVALID_INPUT + " Valid range = [0-2]");
                 }
 
-            } catch(JSONException jsonException)
+            } catch(JSONException jsonException) // improper response
             {
                 System.out.println(Constants.CLIENT + Constants.IMPROPER_JSON);
 
-            } catch(IOException e)
+            } catch(IOException e) // error while connecting to socket
             {
                 System.out.println(Constants.CLIENT + Constants.CONNECTION_ERROR);
 
                 break;
-            } catch(InputMismatchException e)
+            } catch(InputMismatchException e) // input scanner
             {
                 System.out.println(Constants.INVALID_INPUT + " Valid range = [0-2]");
-            } catch(NullPointerException e)
+
+            } catch(NullPointerException e) // when server is down and client is on IO
             {
                 System.out.println(Constants.CLIENT + Constants.SERVER_DOWN);
+            }
+            finally
+            {
+                socket.close();
+
+                userHandler.close();
             }
         }
 
@@ -186,10 +195,9 @@ public class Client
         Table table = builder.build();
 
         System.out.println(table);
-
     }
 
-    public static void startFileSystem(String username)
+    public static void startFileSystem(String username) throws NullPointerException, IOException, JSONException
     {
         Socket socket = null;
 
@@ -207,247 +215,229 @@ public class Client
 
             System.out.print("Enter command >> ");
 
-            try
+
+            var choice = sc.nextLine();
+
+            var parts = choice.split(" ", 2);
+
+            var command = parts[0];
+
+            command = command.toLowerCase();
+
+            var argument = parts.length > 1 ? parts[1] : "";
+
+            switch(command)
             {
-                var choice = sc.nextLine();
+                // PRINTS LIST OF AVAILABLE COMMAND
+                case "help":
 
-                var parts = choice.split(" ", 2);
+                    if(!argument.isEmpty())
+                    {
+                        System.out.println(Constants.CLIENT + Constants.INVALID_INPUT);
+                        break;
+                    }
 
-                var command = parts[0];
+                    Client.printHelp();
 
-                command = command.toLowerCase();
+                    break;
 
-                var argument = parts.length > 1 ? parts[1] : "";
+                // PRINT CURRENT WORKING DIR
+                case "pwd":
 
-                switch(command)
-                {
-                    // PRINTS LIST OF AVAILABLE COMMAND
-                    case "help":
+                    if(!argument.isEmpty())
+                    {
+                        System.out.println(Constants.CLIENT + Constants.INVALID_INPUT);
+                        break;
+                    }
 
-                        if(!argument.isEmpty())
-                        {
-                            System.out.println(Constants.CLIENT + Constants.INVALID_INPUT);
-                            break;
-                        }
+                    System.out.println("Current working directory: " + currPath);
 
-                        Client.printHelp();
+                    break;
+
+                // LIST FILES FROM CURRENT DIR
+                case Constants.LIST:
+
+                    if(!argument.isEmpty())
+                    {
+                        System.out.println(Constants.CLIENT + Constants.INVALID_INPUT);
+                        break;
+                    }
+
+
+                    socket = clientSocket.connectServer();
+
+                    fileSystem = new FileSystem(User.userData.get(username), socket);
+
+                    fileSystem.listFiles();
+
+                    fileSystem.close();
+
+                    break;
+
+                // DOWNLOAD FILE FROM SERVER
+                case Constants.DOWNLOAD:
+
+                    if(argument.isEmpty())
+                    {
+                        System.out.println(Constants.CLIENT + Constants.INVALID_INPUT);
 
                         break;
-
-                    // PRINT CURRENT WORKING DIR
-                    case "pwd":
-
-                        if(!argument.isEmpty())
-                        {
-                            System.out.println(Constants.CLIENT + Constants.INVALID_INPUT);
-                            break;
-                        }
-
-                        System.out.println("Current working directory: " + currPath);
-
-                        break;
-
-                    // LIST FILES FROM CURRENT DIR
-                    case Constants.LIST:
-
-                        if(!argument.isEmpty())
-                        {
-                            System.out.println(Constants.CLIENT + Constants.INVALID_INPUT);
-                            break;
-                        }
-
-
+                    }
+                    else
+                    {
                         socket = clientSocket.connectServer();
 
                         fileSystem = new FileSystem(User.userData.get(username), socket);
 
-                        fileSystem.listFiles();
+                        fileSystem.receiveFile(argument);
 
-                        fileSystem.close();
+                    }
 
-                        break;
+                    fileSystem.close();
 
-                    // DOWNLOAD FILE FROM SERVER
-                    case Constants.DOWNLOAD:
+                    break;
 
-                        if(argument.isEmpty())
-                        {
-                            System.out.println(Constants.CLIENT + Constants.INVALID_INPUT);
+                // UPLOAD FILE TO SERVER
+                case Constants.UPLOAD:
 
-                            break;
-                        }
-                        else
-                        {
-                            socket = clientSocket.connectServer();
-
-                            fileSystem = new FileSystem(User.userData.get(username), socket);
-
-                            fileSystem.requestDownload(argument);
-
-                        }
-
-                        fileSystem.close();
-
-                        break;
-
-                    // UPLOAD FILE TO SERVER
-                    case Constants.UPLOAD:
-
-                        if(argument.isEmpty())
-                        {
-                            System.out.println(Constants.CLIENT + Constants.INVALID_INPUT);
-
-                            break;
-                        }
-                        else
-                        {
-                            socket = clientSocket.connectServer();
-
-                            fileSystem = new FileSystem(User.userData.get(username), socket);
-
-                            fileSystem.requestUpload(argument);
-
-                        }
-
-                        fileSystem.close();
-
-                        break;
-
-                    // DELETE FILE FROM SERVER
-                    case Constants.REMOVE_FILE:
-
-                        if(argument.isEmpty())
-                        {
-                            System.out.println(Constants.CLIENT + Constants.INVALID_INPUT);
-
-                            break;
-                        }
-                        else
-                        {
-                            socket = clientSocket.connectServer();
-
-                            fileSystem = new FileSystem(User.userData.get(username), socket);
-
-                            fileSystem.deleteFile(argument);
-
-                        }
-
-                        fileSystem.close();
-
-                        break;
-
-                    case Constants.MKDIR:
-
-                        if(argument.isEmpty())
-                        {
-                            System.out.println(Constants.CLIENT + Constants.INVALID_INPUT);
-
-                            break;
-                        }
-                        else
-                        {
-                            socket = clientSocket.connectServer();
-
-                            fileSystem = new FileSystem(User.userData.get(username), socket);
-
-                            fileSystem.makeOrRemoveDir(Constants.MKDIR, argument, currPath);
-
-                        }
-
-                        fileSystem.close();
-
-                        break;
-
-                    case Constants.RMDIR:
-
-                        if(argument.isEmpty())
-                        {
-                            System.out.println(Constants.CLIENT + Constants.INVALID_INPUT);
-
-                            break;
-                        }
-                        else
-                        {
-                            socket = clientSocket.connectServer();
-
-                            fileSystem = new FileSystem(User.userData.get(username), socket);
-
-                            fileSystem.makeOrRemoveDir(Constants.RMDIR, argument, currPath);
-
-                        }
-
-                        fileSystem.close();
-
-                        break;
-
-                    case Constants.CD:
-
-                        if(argument.isEmpty()) // go to root directory
-                        {
-                            currPath = "/";
-                        }
-                        else if(argument.equals("..")) // go back to parent directory
-                        {
-                            if(currPath.equals("/"))
-                            {
-                                break;
-                            }
-                            currPath = String.valueOf(Path.of(currPath).getParent());
-                        }
-                        else if(argument.equals(".")) // current path
-                        {
-                            break;
-                        }
-                        else
-                        {
-                            socket = clientSocket.connectServer();
-
-                            fileSystem = new FileSystem(User.userData.get(username), socket);
-
-                            fileSystem.changeDirectory(argument, currPath);
-
-                            fileSystem.close();
-                        }
-
-                        break;
-
-                    // LOGOUT
-                    case Constants.LOGOUT:
-
-                        if(!argument.isEmpty())
-                        {
-                            System.out.println(Constants.CLIENT + Constants.INVALID_INPUT);
-                            break;
-                        }
-
-                        currPath = "/";
-
-                        return;
-
-                    default:
-
+                    if(argument.isEmpty())
+                    {
                         System.out.println(Constants.CLIENT + Constants.INVALID_INPUT);
-                }
 
-            } catch(NullPointerException npe)
-            {
-                System.out.println(Constants.CLIENT + Constants.SERVER_DOWN);
+                        break;
+                    }
+                    else
+                    {
+                        socket = clientSocket.connectServer();
 
-                break;
+                        fileSystem = new FileSystem(User.userData.get(username), socket);
 
-            } catch(IOException e)
-            {
-                System.out.println(Constants.CLIENT + Constants.CONNECTION_ERROR);
+                        fileSystem.sendFile(argument);
 
-                break;
+                    }
 
-            } catch(JSONException jsonException)
-            {
-                System.out.println(Constants.CLIENT + Constants.IMPROPER_JSON);
+                    fileSystem.close();
 
-                break;
+                    break;
+
+                // DELETE FILE FROM SERVER
+                case Constants.REMOVE_FILE:
+
+                    if(argument.isEmpty())
+                    {
+                        System.out.println(Constants.CLIENT + Constants.INVALID_INPUT);
+
+                        break;
+                    }
+                    else
+                    {
+                        socket = clientSocket.connectServer();
+
+                        fileSystem = new FileSystem(User.userData.get(username), socket);
+
+                        fileSystem.deleteFile(argument);
+
+                    }
+
+                    fileSystem.close();
+
+                    break;
+
+                // MAKE DIR ON SERVER
+                case Constants.MKDIR:
+
+                    if(argument.isEmpty())
+                    {
+                        System.out.println(Constants.CLIENT + Constants.INVALID_INPUT);
+
+                        break;
+                    }
+                    else
+                    {
+                        socket = clientSocket.connectServer();
+
+                        fileSystem = new FileSystem(User.userData.get(username), socket);
+
+                        fileSystem.makeOrRemoveDir(Constants.MKDIR, argument, currPath);
+
+                    }
+
+                    fileSystem.close();
+
+                    break;
+
+                // REMOVE DIR ON SERVER
+                case Constants.RMDIR:
+
+                    if(argument.isEmpty())
+                    {
+                        System.out.println(Constants.CLIENT + Constants.INVALID_INPUT);
+
+                        break;
+                    }
+                    else
+                    {
+                        socket = clientSocket.connectServer();
+
+                        fileSystem = new FileSystem(User.userData.get(username), socket);
+
+                        fileSystem.makeOrRemoveDir(Constants.RMDIR, argument, currPath);
+
+                    }
+
+                    fileSystem.close();
+
+                    break;
+
+                // CHANGE DIR
+                case Constants.CD:
+
+                    if(argument.isEmpty()) // go to root directory
+                    {
+                        currPath = "/";
+                    }
+                    else if(argument.equals("..")) // go back to parent directory
+                    {
+                        if(currPath.equals("/"))
+                        {
+                            break;
+                        }
+                        currPath = String.valueOf(Path.of(currPath).getParent());
+                    }
+                    else if(argument.equals(".")) // current path
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        socket = clientSocket.connectServer();
+
+                        fileSystem = new FileSystem(User.userData.get(username), socket);
+
+                        fileSystem.changeDirectory(argument, currPath);
+
+                        fileSystem.close();
+                    }
+
+                    break;
+
+                // LOGOUT
+                case Constants.LOGOUT:
+
+                    if(!argument.isEmpty())
+                    {
+                        System.out.println(Constants.CLIENT + Constants.INVALID_INPUT);
+                        break;
+                    }
+
+                    currPath = "/";
+
+                    return;
+
+                default:
+
+                    System.out.println(Constants.CLIENT + Constants.INVALID_INPUT);
             }
         }
-
     }
 }

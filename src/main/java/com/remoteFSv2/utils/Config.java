@@ -9,14 +9,14 @@ public class Config
     public static final String ROOT_DIR_CLIENT = "/home/yash/IdeaProjects/remoteFSv2/src/main/resources/ClientFS/";
 //    public static final String ROOT_DIR_CLIENT = Common.getDirName() + "/ClientFS/";
 
-    public static final int CLIENT_PORT = 12345;
+    public static final int CLIENT_PORT = 9000;
 
-    public static final String HOST = "10.20.40.227";
+    public static final String HOST = "localhost";
 
     public static final String ROOT_DIR_SERVER = "/home/yash/IdeaProjects/remoteFSv2/src/main/resources/ServerFS/";
 //    public static final String ROOT_DIR_SERVER = Common.getDirName() + "/ServerFS/";
 
-    public static final int SERVER_PORT = 12345;
+    public static final int SERVER_PORT = 9000;
 
     public static final int CHUNK_SIZE = 8192;
 
