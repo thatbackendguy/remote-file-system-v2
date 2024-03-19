@@ -180,8 +180,6 @@ public class FileSystem implements Closeable
 
                 var buffer = new byte[Config.CHUNK_SIZE];
 
-                Client.logger.info("{} upload started!", fileName);
-
                 while((bytes = fileInputStream.read(buffer)) != -1)
                 {
                     // Send the file to Client Socket
@@ -208,7 +206,7 @@ public class FileSystem implements Closeable
                     writer.println(request.toString());
                 }
 
-                Client.logger.info("{} uploaded successfully!", fileName);
+                Client.logger.info("{}: {}", fileName,Constants.FILE_UPLOAD_SUCCESS);
 
                 request.put(Constants.STATUS_CODE, Constants.SUCCESS);
 
@@ -269,8 +267,6 @@ public class FileSystem implements Closeable
 
                     while(resJSON.getString(Constants.STATUS_CODE).equals(Constants.PENDING) && size > 0)
                     {
-                        Client.logger.info("{} download started!", fileName);
-
                         // Decode the Base64 encoded string to a byte array
                         buffer = Base64.getDecoder().decode(resJSON.getString("payload"));
 
@@ -294,7 +290,7 @@ public class FileSystem implements Closeable
 
                 System.out.println(resJSON.getString(Constants.MESSAGE));
 
-                Client.logger.info("{} downloaded successfully!", fileName);
+                Client.logger.info("{}: {}", fileName,Constants.FILE_DOWNLOAD_SUCCESS);
             }
             else
             {

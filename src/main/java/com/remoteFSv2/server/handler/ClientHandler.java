@@ -32,14 +32,14 @@ public class ClientHandler extends Thread
     {
         try(this.clientConnection)
         {
-            Server.logger.info(Constants.CLIENT_CONNECTED + clientConnection.clientSocket);
+            Server.logger.trace(Constants.CLIENT_CONNECTED + clientConnection.clientSocket);
 
             // Handle client requests
             var request = "";
 
             while((request = clientConnection.receive()) != null)
             {
-                Server.logger.info("Received request from client: " + request);
+                Server.logger.trace("Received request: " + request);
 
                 var requestJSON = new JSONObject(request);
 
@@ -51,7 +51,7 @@ public class ClientHandler extends Thread
             // send response that received json is improper format
             var response = new JSONObject();
 
-            response.put(Constants.STATUS_CODE,Constants.FAILED);
+            response.put(Constants.STATUS_CODE, Constants.FAILED);
 
             response.put(Constants.MESSAGE, Constants.IMPROPER_JSON);
 
@@ -67,7 +67,7 @@ public class ClientHandler extends Thread
             {
                 clientConnection.close(); // Close client socket
 
-                Server.logger.error(Server.fatal, "[Server] Client connection closed: " + clientConnection);
+                Server.logger.trace("Client connection closed: " + clientConnection);
 
             } catch(IOException e)
             {

@@ -8,8 +8,16 @@
     </appender>
 
     <!-- File Appender for Client Logs -->
-    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+    <appender name="FILE_CLIENT" class="ch.qos.logback.core.FileAppender">
         <file>Client.log</file>
+        <encoder>
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%-5level] [%file:%line] %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- File Appender for Server Logs -->
+    <appender name="FILE_SERVER" class="ch.qos.logback.core.FileAppender">
+        <file>Server.log</file>
         <encoder>
             <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%-5level] [%file:%line] %msg%n</pattern>
         </encoder>
@@ -22,6 +30,11 @@
 
     <!-- Logger for Client -->
     <logger name="com.remoteFSv2.client.Client" level="info" additivity="false">
-        <appender-ref ref="FILE" />
+        <appender-ref ref="FILE_CLIENT" />
+    </logger>
+
+    <!-- Logger for Server -->
+    <logger name="com.remoteFSv2.server.Server" level="info" additivity="false">
+        <appender-ref ref="FILE_SERVER" />
     </logger>
 </configuration>

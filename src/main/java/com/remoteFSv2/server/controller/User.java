@@ -36,6 +36,8 @@ public class User
             response.put(Constants.MESSAGE, Constants.SERVER + Constants.REGISTRATION_ERROR);
 
             clientConnection.send(response.toString());
+
+            Server.logger.error(Constants.REGISTRATION_ERROR);
         }
         else
         {
@@ -56,6 +58,8 @@ public class User
                 Server.logger.error(Constants.SERVER + Constants.MKDIR_FAIL);
             }
 
+            Server.logger.info(Constants.REGISTRATION_SUCCESS);
+
             clientConnection.send(response.toString());
         }
     }
@@ -72,6 +76,8 @@ public class User
             response.put(Constants.MESSAGE, Constants.SERVER + Constants.USER_NOT_FOUND);
 
             clientConnection.send(response.toString());
+
+            Server.logger.error(Constants.USER_NOT_FOUND);
         }
         if(userCredentials.containsKey(username)) // user exists
         {
@@ -88,6 +94,8 @@ public class User
                     response.put(Constants.MESSAGE, Constants.SERVER + Constants.LOGIN_SUCCESS);
 
                     clientConnection.send(response.toString());
+
+                    Server.logger.info(username + " " + Constants.LOGIN_SUCCESS);
                 }
                 else
                 {
@@ -96,6 +104,8 @@ public class User
                     response.put(Constants.MESSAGE, Constants.SERVER + Constants.INVALID_CREDENTIALS);
 
                     clientConnection.send(response.toString());
+
+                    Server.logger.error("Login not successful!");
                 }
 
 
@@ -107,6 +117,8 @@ public class User
             response.put(Constants.MESSAGE, Constants.SERVER + Constants.INVALID_CREDENTIALS);
 
             clientConnection.send(response.toString());
+
+            Server.logger.error(Constants.INVALID_CREDENTIALS);
         }
     }
 }

@@ -58,16 +58,20 @@ public class FileSystem
                     response.put("files", files);
 
                     response.put(Constants.STATUS_CODE, Constants.SUCCESS);
+
+                    Server.logger.info("{}: Files listed successfully!",username);
                 }
                 else
                 {
                     response.put(Constants.STATUS_CODE, Constants.FAILED);
 
                     response.put(Constants.MESSAGE, Constants.SERVER + currPath + " " + Constants.EMPTY_DIRECTORY);
+
+                    Server.logger.error("{}: {} {}",username,currPath,Constants.EMPTY_DIRECTORY);
                 }
             } catch(IOException e)
             {
-                Server.logger.error(Constants.SERVER + "Error listing files!" + e.getMessage());
+                Server.logger.error("{}: Error listing files!",username);
             }
         }
         else
@@ -75,6 +79,8 @@ public class FileSystem
             response.put(Constants.STATUS_CODE, Constants.FAILED);
 
             response.put(Constants.MESSAGE, Constants.SERVER + Constants.JWT_INVALID);
+
+            Server.logger.error(Constants.JWT_INVALID);
         }
 
         clientConnection.send(response.toString());
@@ -99,10 +105,12 @@ public class FileSystem
 
                     response.put(Constants.MESSAGE, Constants.SERVER + fileName + " " + Constants.FILE_DELETE_SUCCESS);
 
+                    Server.logger.info("{}: {}",username,Constants.FILE_DELETE_SUCCESS);
+
                 }
                 else
                 {
-                    Server.logger.error(Constants.SERVER + fileName + " " + Constants.FILE_NOT_FOUND);
+                    Server.logger.error("{}: {}",username,Constants.FILE_NOT_FOUND);
 
                     response.put(Constants.MESSAGE, Constants.SERVER + fileName + " " + Constants.FILE_NOT_FOUND);
                 }
@@ -110,12 +118,14 @@ public class FileSystem
             else
             {
                 response.put(Constants.MESSAGE, Constants.SERVER + Constants.JWT_INVALID);
+
+                Server.logger.error(Constants.JWT_INVALID);
             }
         } catch(IOException e)
         {
             response.put(Constants.MESSAGE, Constants.SERVER + fileName + " " + Constants.FILE_DELETE_ERROR);
 
-            Server.logger.error(Constants.SERVER + fileName + " " + Constants.FILE_DELETE_ERROR + e.getMessage());
+            Server.logger.error(fileName + " " + Constants.FILE_DELETE_ERROR + e.getMessage());
         }
 
         clientConnection.send(response.toString());
@@ -137,19 +147,27 @@ public class FileSystem
 
                 response.put(Constants.MESSAGE, Constants.SERVER + dirName + " " + Constants.MKDIR_SUCCESS);
 
+                Server.logger.info("{}: {}",username,Constants.MKDIR_SUCCESS);
+
             } catch(FileAlreadyExistsException e)
             {
                 response.put(Constants.MESSAGE, Constants.SERVER + dirName + " " + Constants.DIR_ALREADY_EXISTS);
+
+                Server.logger.error("{}: {}",username,Constants.DIR_ALREADY_EXISTS);
 
             } catch(IOException e)
             {
                 // parent dir not exists
                 response.put(Constants.MESSAGE, Constants.SERVER + currPath + " " + Constants.INVALID_PATH);
+
+                Server.logger.error("{}: {}",username,Constants.INVALID_PATH);
             }
         }
         else
         {
             response.put(Constants.MESSAGE, Constants.SERVER + Constants.JWT_INVALID);
+
+            Server.logger.error(Constants.JWT_INVALID);
         }
 
         clientConnection.send(response.toString());
@@ -173,21 +191,29 @@ public class FileSystem
 
                     response.put(Constants.MESSAGE, Constants.SERVER + dirName + " " + Constants.DIR_DELETE_SUCCESS);
 
+                    Server.logger.info("{}: {}",username,Constants.DIR_DELETE_SUCCESS);
+
                 } catch(IOException e)
                 {
                     // delete failed
                     response.put(Constants.MESSAGE, Constants.SERVER + dirName + " " + Constants.DIR_DELETE_ERROR);
+
+                    Server.logger.error("{}: {}",username,Constants.DIR_DELETE_ERROR);
                 }
             }
             else
             {
                 // delete failed
                 response.put(Constants.MESSAGE, Constants.SERVER + currPath + " " + Constants.INVALID_PATH);
+
+                Server.logger.error("{}: {}",username,Constants.INVALID_PATH);
             }
         }
         else
         {
-            response.put(Constants.MESSAGE, Constants.SERVER + Constants.UNAUTHORIZED_ACCESS);
+            response.put(Constants.MESSAGE, Constants.SERVER + Constants.JWT_INVALID);
+
+            Server.logger.error(Constants.JWT_INVALID);
         }
 
         clientConnection.send(response.toString());
@@ -216,13 +242,17 @@ public class FileSystem
                 response.put(Constants.STATUS_CODE, Constants.FAILED);
 
                 response.put(Constants.MESSAGE, Constants.SERVER + currPath + "/" + destPath + " " + Constants.INVALID_PATH);
+
+                Server.logger.error("{}: {}",username,Constants.INVALID_PATH);
             }
         }
         else
         {
             response.put(Constants.STATUS_CODE, Constants.FAILED);
 
-            response.put(Constants.MESSAGE, Constants.SERVER + Constants.UNAUTHORIZED_ACCESS);
+            response.put(Constants.MESSAGE, Constants.SERVER + Constants.JWT_INVALID);
+
+            Server.logger.error(Constants.JWT_INVALID);
 
         }
 
@@ -270,14 +300,20 @@ public class FileSystem
             } catch(IOException e)
             {
                 response.put(Constants.MESSAGE, Constants.SERVER + fileName + " " + Constants.FILE_UPLOAD_ERROR);
+
+                Server.logger.error("{}: {}",fileName,Constants.FILE_UPLOAD_ERROR);
             }
         }
         else
         {
             response.put(Constants.MESSAGE, Constants.SERVER + Constants.JWT_INVALID);
+
+            Server.logger.error(Constants.JWT_INVALID);
         }
 
         response.put(Constants.MESSAGE, Constants.SERVER + fileName + " " + Constants.FILE_UPLOAD_SUCCESS);
+
+        Server.logger.info("{}: {}",fileName,Constants.FILE_UPLOAD_SUCCESS);
 
         clientConnection.send(response.toString());
     }
@@ -309,30 +345,29 @@ public class FileSystem
                         // Convert the byte array to a Base64 encoded string
                         String payload = Base64.getEncoder().encodeToString(buffer);
 
-                        response.put(Constants.STATUS_CODE,Constants.PENDING);
+                        response.put(Constants.STATUS_CODE, Constants.PENDING);
 
-                        response.put(Constants.FILE_NAME,fileName);
+                        response.put(Constants.FILE_NAME, fileName);
 
-                        response.put("fileSize",fileSize);
+                        response.put("fileSize", fileSize);
 
-                        response.put("payload",payload);
+                        response.put("payload", payload);
 
-                        response.put("offset",bytes);
+                        response.put("offset", bytes);
 
                         // send packet to server
                         clientConnection.send(response.toString());
                     }
 
-                    Server.logger.info(Constants.SERVER + fileName + " " + Constants.FILE_SENT_SUCCESS);
+                    Server.logger.info("{}: {}",fileName,Constants.FILE_SENT_SUCCESS);
 
-                    response.put(Constants.STATUS_CODE,Constants.SUCCESS);
+                    response.put(Constants.STATUS_CODE, Constants.SUCCESS);
 
                     response.put(Constants.MESSAGE, Constants.SERVER + fileName + " " + Constants.FILE_DOWNLOAD_SUCCESS);
 
-                }
-                catch(IOException e) // exception caught for FileInputStream
+                } catch(IOException e) // exception caught for FileInputStream
                 {
-                    Server.logger.error(Constants.SERVER + "Error reading file!");
+                    Server.logger.error("Error reading file!");
 
                     response.put(Constants.MESSAGE, Constants.SERVER + "Error reading file!");
                 }
@@ -342,6 +377,8 @@ public class FileSystem
                 response.put(Constants.STATUS_CODE, Constants.FAILED);
 
                 response.put(Constants.MESSAGE, Constants.SERVER + Constants.FILE_NOT_FOUND);
+
+                Server.logger.error(Constants.FILE_NOT_FOUND);
             }
 
         }
@@ -349,7 +386,9 @@ public class FileSystem
         {
             response.put(Constants.STATUS_CODE, Constants.FAILED);
 
-            response.put(Constants.MESSAGE, Constants.SERVER + Constants.UNAUTHORIZED_ACCESS);
+            response.put(Constants.MESSAGE, Constants.SERVER + Constants.JWT_INVALID);
+
+            Server.logger.error(Constants.JWT_INVALID);
 
         }
 
