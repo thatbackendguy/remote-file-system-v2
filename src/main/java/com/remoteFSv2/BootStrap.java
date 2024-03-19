@@ -18,7 +18,9 @@ import java.util.Objects;
 public class BootStrap
 {
     public static final Logger logger = LoggerFactory.getLogger(BootStrap.class);
+
     public static final Marker fatal = MarkerFactory.getMarker("FATAL");
+
     public static void main(String[] args)
     {
         if(args.length > 0)

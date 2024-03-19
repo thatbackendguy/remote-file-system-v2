@@ -28,13 +28,18 @@
         <appender-ref ref="STDOUT" />
     </root>
 
+    <root level="TRACE">
+        <appender-ref ref="FILE_SERVER" />
+        <appender-ref ref="STDOUT" />
+    </root>
+
     <!-- Logger for Client -->
-    <logger name="com.remoteFSv2.client.Client" level="info" additivity="false">
+    <logger name="com.remoteFSv2.client.Client" level="TRACE" additivity="false">
         <appender-ref ref="FILE_CLIENT" />
     </logger>
 
     <!-- Logger for Server -->
-    <logger name="com.remoteFSv2.server.Server" level="info" additivity="false">
+    <logger name="com.remoteFSv2.server.Server" level="TRACE" additivity="false">
         <appender-ref ref="FILE_SERVER" />
     </logger>
 </configuration>
