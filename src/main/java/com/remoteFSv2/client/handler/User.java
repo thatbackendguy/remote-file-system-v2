@@ -1,5 +1,6 @@
 package com.remoteFSv2.client.handler;
 
+import com.remoteFSv2.client.Client;
 import com.remoteFSv2.utils.Constants;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -59,11 +60,15 @@ public class User
 
                 System.out.println(resJSON.getString(Constants.MESSAGE));
 
+                Client.logger.info(Constants.LOGIN_SUCCESS);
+
                 return true;
             }
             else
             {
                 System.out.println(resJSON.getString(Constants.MESSAGE));
+
+                Client.logger.error("Login Failed!");
 
                 return false;
             }
@@ -87,11 +92,15 @@ public class User
             {
                 System.out.println(resJSON.getString(Constants.MESSAGE));
 
+                Client.logger.info(Constants.LOGIN_SUCCESS);
+
                 return true;
             }
             else
             {
                 System.out.println(resJSON.getString(Constants.MESSAGE));
+
+                Client.logger.error(Client.fatal, Constants.REGISTRATION_ERROR);
 
                 return false;
             }

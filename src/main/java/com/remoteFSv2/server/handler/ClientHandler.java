@@ -1,5 +1,6 @@
 package com.remoteFSv2.server.handler;
 
+import com.remoteFSv2.server.Server;
 import com.remoteFSv2.server.controller.FileSystem;
 import com.remoteFSv2.server.controller.User;
 import com.remoteFSv2.utils.Constants;
@@ -31,14 +32,14 @@ public class ClientHandler extends Thread
     {
         try(this.clientConnection)
         {
-            System.out.println(Constants.SERVER + Constants.CLIENT_CONNECTED + clientConnection.clientSocket);
+            Server.logger.info(Constants.CLIENT_CONNECTED + clientConnection.clientSocket);
 
             // Handle client requests
             var request = "";
 
             while((request = clientConnection.receive()) != null)
             {
-                System.out.println("[Server] Received request from client: " + request);
+                Server.logger.info("Received request from client: " + request);
 
                 var requestJSON = new JSONObject(request);
 
@@ -48,17 +49,17 @@ public class ClientHandler extends Thread
         } catch(JSONException jsonException)
         {
             // send response that received json is improper format
-            var res = new JSONObject();
+            var response = new JSONObject();
 
-            res.put("status", "1");
+            response.put(Constants.STATUS_CODE,Constants.FAILED);
 
-            res.put("message", Constants.IMPROPER_JSON);
+            response.put(Constants.MESSAGE, Constants.IMPROPER_JSON);
 
-            clientConnection.send(res.toString());
+            clientConnection.send(response.toString());
 
         } catch(IOException e)
         {
-            System.out.println("[Server] Error handling client request: " + e.getMessage());
+            Server.logger.error("Error handling client request: " + e.getMessage());
 
         } finally
         {
@@ -66,11 +67,11 @@ public class ClientHandler extends Thread
             {
                 clientConnection.close(); // Close client socket
 
-                System.out.println("[Server] Client connection closed: " + clientConnection);
+                Server.logger.error(Server.fatal, "[Server] Client connection closed: " + clientConnection);
 
             } catch(IOException e)
             {
-                System.out.println("[Server] Error while closing client connection: " + e.getMessage());
+                Server.logger.error(Server.fatal, "[Server] Error while closing client connection: " + e.getMessage());
             }
         }
     }
@@ -136,7 +137,7 @@ public class ClientHandler extends Thread
                 return;
 
             default:
-                System.out.println(Constants.SERVER + Constants.INVALID_INPUT);
+                Server.logger.error(Constants.INVALID_INPUT);
         }
     }
 }

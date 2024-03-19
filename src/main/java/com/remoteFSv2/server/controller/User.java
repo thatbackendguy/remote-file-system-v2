@@ -1,5 +1,6 @@
 package com.remoteFSv2.server.controller;
 
+import com.remoteFSv2.server.Server;
 import com.remoteFSv2.server.handler.ClientConnection;
 import com.remoteFSv2.utils.Config;
 import com.remoteFSv2.utils.Constants;
@@ -15,23 +16,18 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class User
 {
-    private JSONObject response = new JSONObject();
-
     private final ClientConnection clientConnection;
 
     public static ConcurrentHashMap<String, String> userCredentials = new ConcurrentHashMap<>();
-
-//    public static ConcurrentHashMap<String, String> usersMap = new ConcurrentHashMap<>();
-
 
     public User(ClientConnection clientConnection)
     {
         this.clientConnection = clientConnection;
     }
 
-
     public void registerUser(String username, String password)
     {
+        var response = new JSONObject();
 
         if(userCredentials.containsKey(username))
         {
@@ -45,11 +41,7 @@ public class User
         {
             userCredentials.put(username, password);
 
-//            usersMap.put(username, token);
-
             response.put(Constants.STATUS_CODE, 0);
-
-
 
             response.put(Constants.MESSAGE, Constants.SERVER + Constants.REGISTRATION_SUCCESS);
 
@@ -61,7 +53,7 @@ public class User
 
             } catch(IOException e)
             {
-                System.out.println(Constants.SERVER + Constants.MKDIR_FAIL);
+                Server.logger.error(Constants.SERVER + Constants.MKDIR_FAIL);
             }
 
             clientConnection.send(response.toString());
@@ -71,6 +63,8 @@ public class User
 
     public void loginUser(String username, String password)
     {
+        var response = new JSONObject();
+
         if(userCredentials.isEmpty())
         {
             response.put(Constants.STATUS_CODE, 1);
@@ -92,8 +86,6 @@ public class User
                     response.put(Constants.TOKEN, token);
 
                     response.put(Constants.MESSAGE, Constants.SERVER + Constants.LOGIN_SUCCESS);
-
-//                    usersMap.put(username, token);
 
                     clientConnection.send(response.toString());
                 }

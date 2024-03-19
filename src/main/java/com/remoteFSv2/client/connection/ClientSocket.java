@@ -34,6 +34,8 @@ public class ClientSocket
         {
             System.out.println(Constants.CLIENT + Constants.CONNECTION_ERROR);
 
+            Client.logger.error(Constants.CONNECTION_ERROR);
+
             System.out.println("[Client] Retrying again in 5 seconds...");
 
             try
@@ -43,14 +45,19 @@ public class ClientSocket
 
             } catch(InterruptedException ex)
             {
-                System.out.println(Constants.CLIENT + "Error!\nStatus: FATAL\nMessage: " + ex.getMessage());
+                System.out.println(Constants.CLIENT + "Error! See logs for more info...");
+
+                Client.logger.error(Client.fatal, ex.getMessage());
+
             }
             try
             {
                 Client.start();
             } catch(NullPointerException | IOException exception)
             {
-                System.out.println(Constants.CLIENT + Constants.SERVER_START_ERROR);
+                System.out.println(Constants.CLIENT + "Error starting client!");
+
+                Client.logger.error(Client.fatal, "Error starting client!");
             }
         }
 

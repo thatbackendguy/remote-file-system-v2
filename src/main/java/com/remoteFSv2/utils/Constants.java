@@ -100,7 +100,7 @@ public class Constants
 
 
     // Server Messages
-    public static final String SERVER_START_SUCCESS = "Server started successfully!\nPORT: ";
+    public static final String SERVER_START_SUCCESS = "Server started successfully! at PORT: ";
 
     public static final String SERVER_STOP = "Server Socket closed!";
 

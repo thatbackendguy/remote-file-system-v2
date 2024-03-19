@@ -3,12 +3,17 @@ package com.remoteFSv2.client;
 import com.remoteFSv2.client.connection.ClientSocket;
 import com.remoteFSv2.client.handler.FileSystem;
 import com.remoteFSv2.client.handler.User;
+import com.remoteFSv2.server.Server;
 import com.remoteFSv2.utils.Util;
 import com.remoteFSv2.utils.Constants;
 import io.bretty.console.table.Alignment;
 import io.bretty.console.table.ColumnFormatter;
 import io.bretty.console.table.Table;
 import org.json.JSONException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 import org.w3c.dom.ls.LSOutput;
 
 import java.io.IOException;
@@ -19,6 +24,10 @@ import java.util.Scanner;
 
 public class Client
 {
+    public static final Logger logger = LoggerFactory.getLogger(Client.class);
+
+    public static final Marker fatal = MarkerFactory.getMarker("FATAL");
+
     public static String currPath = "/";
 
     public static void start() throws IOException,NullPointerException
@@ -141,6 +150,7 @@ public class Client
                         return;
 
                     default:
+                        logger.info(Constants.INVALID_INPUT);
 
                         System.out.println(Constants.INVALID_INPUT + " Valid range = [0-2]");
                 }
@@ -149,18 +159,26 @@ public class Client
             {
                 System.out.println(Constants.CLIENT + Constants.IMPROPER_JSON);
 
+                logger.error(Constants.IMPROPER_JSON);
+
             } catch(IOException e) // error while connecting to socket
             {
                 System.out.println(Constants.CLIENT + Constants.CONNECTION_ERROR);
+
+                logger.error(fatal, Constants.CONNECTION_ERROR);
 
                 break;
             } catch(InputMismatchException e) // input scanner
             {
                 System.out.println(Constants.INVALID_INPUT + " Valid range = [0-2]");
 
+                logger.error(Constants.INVALID_INPUT);
+
             } catch(NullPointerException e) // when server is down and client is on IO
             {
                 System.out.println(Constants.CLIENT + Constants.SERVER_DOWN);
+
+                logger.error(fatal, Constants.SERVER_DOWN);
             }
             finally
             {
@@ -215,7 +233,6 @@ public class Client
 
             System.out.print("Enter command >> ");
 
-
             var choice = sc.nextLine();
 
             var parts = choice.split(" ", 2);
@@ -234,6 +251,9 @@ public class Client
                     if(!argument.isEmpty())
                     {
                         System.out.println(Constants.CLIENT + Constants.INVALID_INPUT);
+
+                        logger.error(Constants.INVALID_INPUT + "at HELP");
+
                         break;
                     }
 
@@ -247,6 +267,9 @@ public class Client
                     if(!argument.isEmpty())
                     {
                         System.out.println(Constants.CLIENT + Constants.INVALID_INPUT);
+
+                        logger.error(Constants.INVALID_INPUT + "at PWD");
+
                         break;
                     }
 
@@ -260,6 +283,9 @@ public class Client
                     if(!argument.isEmpty())
                     {
                         System.out.println(Constants.CLIENT + Constants.INVALID_INPUT);
+
+                        logger.error(Constants.INVALID_INPUT + "at LIST");
+
                         break;
                     }
 
@@ -280,6 +306,8 @@ public class Client
                     if(argument.isEmpty())
                     {
                         System.out.println(Constants.CLIENT + Constants.INVALID_INPUT);
+
+                        logger.error(Constants.INVALID_INPUT + "at DOWNLOAD");
 
                         break;
                     }
@@ -304,6 +332,8 @@ public class Client
                     {
                         System.out.println(Constants.CLIENT + Constants.INVALID_INPUT);
 
+                        logger.error(Constants.INVALID_INPUT + "at UPLOAD");
+
                         break;
                     }
                     else
@@ -326,6 +356,8 @@ public class Client
                     if(argument.isEmpty())
                     {
                         System.out.println(Constants.CLIENT + Constants.INVALID_INPUT);
+
+                        logger.error(Constants.INVALID_INPUT + "at REMOVE FILE");
 
                         break;
                     }
@@ -350,6 +382,8 @@ public class Client
                     {
                         System.out.println(Constants.CLIENT + Constants.INVALID_INPUT);
 
+                        logger.error(Constants.INVALID_INPUT + "at MKDIR");
+
                         break;
                     }
                     else
@@ -373,6 +407,8 @@ public class Client
                     {
                         System.out.println(Constants.CLIENT + Constants.INVALID_INPUT);
 
+                        logger.error(Constants.INVALID_INPUT + "at RMDIR");
+
                         break;
                     }
                     else
@@ -395,6 +431,8 @@ public class Client
                     if(argument.isEmpty()) // go to root directory
                     {
                         currPath = "/";
+
+                        Client.logger.info("Directory changed to root folder!");
                     }
                     else if(argument.equals("..")) // go back to parent directory
                     {
@@ -403,6 +441,8 @@ public class Client
                             break;
                         }
                         currPath = String.valueOf(Path.of(currPath).getParent());
+
+                        Client.logger.info("Directory changed to {}!",currPath);
                     }
                     else if(argument.equals(".")) // current path
                     {
@@ -427,6 +467,9 @@ public class Client
                     if(!argument.isEmpty())
                     {
                         System.out.println(Constants.CLIENT + Constants.INVALID_INPUT);
+
+                        logger.error(Constants.INVALID_INPUT + "at LOGOUT");
+
                         break;
                     }
 
@@ -437,6 +480,8 @@ public class Client
                 default:
 
                     System.out.println(Constants.CLIENT + Constants.INVALID_INPUT);
+
+                    logger.error(Constants.INVALID_INPUT);
             }
         }
     }

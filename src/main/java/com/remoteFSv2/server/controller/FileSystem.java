@@ -1,12 +1,14 @@
 package com.remoteFSv2.server.controller;
 
 import com.remoteFSv2.client.Client;
+import com.remoteFSv2.server.Server;
 import com.remoteFSv2.server.handler.ClientConnection;
 import com.remoteFSv2.utils.Util;
 import com.remoteFSv2.utils.Config;
 import com.remoteFSv2.utils.Constants;
 import com.remoteFSv2.utils.JWTUtil;
 import org.json.JSONObject;
+import org.slf4j.Logger;
 
 import java.io.*;
 import java.nio.file.*;
@@ -15,8 +17,6 @@ import java.util.*;
 
 public class FileSystem
 {
-    private JSONObject response = new JSONObject();
-
     private final String rootDirectory; // Root directory of the file system
 
     private final ClientConnection clientConnection;
@@ -30,7 +30,7 @@ public class FileSystem
 
     public void listFiles(String token, String currPath)
     {
-
+        var response = new JSONObject();
 
         String username = JWTUtil.verifyToken(token);
 
@@ -67,7 +67,7 @@ public class FileSystem
                 }
             } catch(IOException e)
             {
-                System.out.println(Constants.SERVER + "Error listing files!" + e.getMessage());
+                Server.logger.error(Constants.SERVER + "Error listing files!" + e.getMessage());
             }
         }
         else
@@ -83,6 +83,8 @@ public class FileSystem
 
     public void deleteFile(String token, String fileName, String currPath)
     {
+        var response = new JSONObject();
+
         try
         {
             var username = JWTUtil.verifyToken(token);
@@ -100,7 +102,7 @@ public class FileSystem
                 }
                 else
                 {
-                    System.out.println(Constants.SERVER + fileName + " " + Constants.FILE_NOT_FOUND);
+                    Server.logger.error(Constants.SERVER + fileName + " " + Constants.FILE_NOT_FOUND);
 
                     response.put(Constants.MESSAGE, Constants.SERVER + fileName + " " + Constants.FILE_NOT_FOUND);
                 }
@@ -113,7 +115,7 @@ public class FileSystem
         {
             response.put(Constants.MESSAGE, Constants.SERVER + fileName + " " + Constants.FILE_DELETE_ERROR);
 
-            System.out.println(Constants.SERVER + fileName + " " + Constants.FILE_DELETE_ERROR + e.getMessage());
+            Server.logger.error(Constants.SERVER + fileName + " " + Constants.FILE_DELETE_ERROR + e.getMessage());
         }
 
         clientConnection.send(response.toString());
@@ -121,6 +123,7 @@ public class FileSystem
 
     public void makeDirectory(String token, String dirName, String currPath)
     {
+        var response = new JSONObject();
 
         var username = JWTUtil.verifyToken(token);
 
@@ -154,6 +157,8 @@ public class FileSystem
 
     public void removeDirectory(String token, String dirName, String currPath)
     {
+        var response = new JSONObject();
+
         var username = JWTUtil.verifyToken(token);
 
         if(username != null)
@@ -190,6 +195,8 @@ public class FileSystem
 
     public void changeDirectory(String token, String destPath, String currPath)
     {
+        var response = new JSONObject();
+
         var username = JWTUtil.verifyToken(token);
 
         if(username != null)
@@ -224,6 +231,8 @@ public class FileSystem
 
     public void receiveFile(JSONObject request)
     {
+        var response = new JSONObject();
+
         var currPath = request.getString(Constants.CURRENT_DIR_PATH);
 
         var fileName = request.getString(Constants.FILE_NAME);
@@ -275,6 +284,8 @@ public class FileSystem
 
     public void sendFile(String token, String currPath, String fileName)
     {
+        var response = new JSONObject();
+
         String username = JWTUtil.verifyToken(token);
 
         if(username != null)
@@ -312,7 +323,7 @@ public class FileSystem
                         clientConnection.send(response.toString());
                     }
 
-                    System.out.println(Constants.SERVER + fileName + " " + Constants.FILE_SENT_SUCCESS);
+                    Server.logger.info(Constants.SERVER + fileName + " " + Constants.FILE_SENT_SUCCESS);
 
                     response.put(Constants.STATUS_CODE,Constants.SUCCESS);
 
@@ -321,7 +332,7 @@ public class FileSystem
                 }
                 catch(IOException e) // exception caught for FileInputStream
                 {
-                    System.out.println(Constants.SERVER + "Error reading file!");
+                    Server.logger.error(Constants.SERVER + "Error reading file!");
 
                     response.put(Constants.MESSAGE, Constants.SERVER + "Error reading file!");
                 }

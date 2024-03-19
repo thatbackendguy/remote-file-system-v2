@@ -5,6 +5,10 @@ import com.remoteFSv2.server.Server;
 import com.remoteFSv2.utils.Util;
 import com.remoteFSv2.utils.Config;
 import com.remoteFSv2.utils.Constants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -13,7 +17,8 @@ import java.util.Objects;
 
 public class BootStrap
 {
-
+    public static final Logger logger = LoggerFactory.getLogger(BootStrap.class);
+    public static final Marker fatal = MarkerFactory.getMarker("FATAL");
     public static void main(String[] args)
     {
         if(args.length > 0)
@@ -26,7 +31,7 @@ public class BootStrap
 
                 } catch(NullPointerException | IOException e)
                 {
-                    System.out.println(Constants.SERVER + Constants.SERVER_STOP_ERROR);
+                    logger.error(fatal,Constants.SERVER + Constants.SERVER_STOP_ERROR);
                 }
 
             }
@@ -38,7 +43,7 @@ public class BootStrap
 
                 } catch(NullPointerException | IOException e)
                 {
-                    System.out.println(Constants.CLIENT + Constants.CONNECTION_ERROR);
+                    logger.error(fatal,Constants.CLIENT + Constants.CONNECTION_ERROR);
                 }
             }
             else if(Objects.equals(args[0],"clean"))
@@ -51,11 +56,11 @@ public class BootStrap
                     Files.createDirectories(Path.of(Config.ROOT_DIR_SERVER));
                     Files.createDirectories(Path.of(Config.ROOT_DIR_CLIENT));
 
-                    System.out.println("Cleanup Successful!");
+                    logger.info("Cleanup Successful!");
                 }
                 catch(IOException e)
                 {
-                    System.out.println(Constants.SERVER + "Error in cleaning!");
+                    logger.error(fatal,"Error in cleaning!");
                 }
 
             }

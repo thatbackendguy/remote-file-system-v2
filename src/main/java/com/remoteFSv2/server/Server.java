@@ -11,9 +11,16 @@ import com.remoteFSv2.server.controller.User;
 import com.remoteFSv2.server.handler.ClientConnection;
 import com.remoteFSv2.server.handler.ClientHandler;
 import com.remoteFSv2.utils.Constants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 
 public class Server
 {
+    public static final Logger logger = LoggerFactory.getLogger(Server.class);
+    public static final Marker fatal = MarkerFactory.getMarker("FATAL");
+
     public static void start() throws IOException,NullPointerException
     {
         ServerSocket serverSocket = null;
@@ -27,7 +34,7 @@ public class Server
 
             serverSocket = new ServerSocket(Config.SERVER_PORT);
 
-            System.out.println(Constants.SERVER + Constants.SERVER_START_SUCCESS + Config.SERVER_PORT);
+            logger.info(Constants.SERVER + Constants.SERVER_START_SUCCESS + Config.SERVER_PORT);
 
             threadPoolExecutor = new ThreadPoolExecutor(Config.CORE_POOL_SIZE, Config.MAXIMUM_POOL_SIZE, Config.KEEP_ALIVE_TIME, Config.TIME_UNIT, Config.WORKERS);
 
@@ -48,11 +55,11 @@ public class Server
 
         } catch(IOException io)
         {
-            System.out.println(Constants.SERVER + Constants.SERVER_START_ERROR);
+            logger.error(fatal, Constants.SERVER + Constants.SERVER_START_ERROR);
 
         } catch(Exception e)
         {
-            System.out.println(Constants.SERVER + Constants.SERVER_DOWN);
+            logger.error(fatal, Constants.SERVER + Constants.SERVER_DOWN);
 
         } finally
         {
@@ -62,7 +69,7 @@ public class Server
 
                 threadPoolExecutor.shutdown();
 
-                System.out.println(Constants.SERVER + Constants.SERVER_STOP);
+                logger.error(fatal, Constants.SERVER + Constants.SERVER_STOP);
         }
 
     }
