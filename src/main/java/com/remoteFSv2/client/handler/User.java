@@ -1,7 +1,7 @@
 package com.remoteFSv2.client.handler;
 
-import com.remoteFSv2.client.Client;
-import com.remoteFSv2.utils.Constants;
+import static com.remoteFSv2.client.Client.*;
+import static com.remoteFSv2.utils.Constants.*;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -37,11 +37,11 @@ public class User
 
     public boolean authenticateUser(String command, String username, String password) throws JSONException, IOException, NullPointerException
     {
-        if(command.equals(Constants.LOGIN))
+        if(command.equals(LOGIN))
         {
             request.clear();
 
-            request.put(Constants.COMMAND, Constants.LOGIN);
+            request.put(COMMAND, LOGIN);
 
             request.put("username", username.trim());
 
@@ -53,30 +53,30 @@ public class User
 
             JSONObject resJSON = new JSONObject(response);
 
-            if(resJSON.getInt(Constants.STATUS_CODE) == 0)
+            if(resJSON.getString(STATUS_CODE).equals(SUCCESS))
             {
 
-                userData.put(username, resJSON.getString(Constants.TOKEN));
+                userData.put(username, resJSON.getString(TOKEN));
 
-                System.out.println(resJSON.getString(Constants.MESSAGE));
+                System.out.println(resJSON.getString(MESSAGE));
 
-                Client.logger.info(Constants.LOGIN_SUCCESS);
+                logger.info(LOGIN_SUCCESS);
 
                 return true;
             }
             else
             {
-                System.out.println(resJSON.getString(Constants.MESSAGE));
+                System.out.println(resJSON.getString(MESSAGE));
 
-                Client.logger.error("Login Failed!");
+                logger.error("Login Failed!");
 
                 return false;
             }
 
         }
-        else if(command.equals(Constants.REGISTER))
+        else if(command.equals(REGISTER))
         {
-            request.put(Constants.COMMAND, Constants.REGISTER);
+            request.put(COMMAND, REGISTER);
 
             request.put("username", username.trim());
 
@@ -88,19 +88,19 @@ public class User
 
             JSONObject resJSON = new JSONObject(response);
 
-            if(resJSON.getInt(Constants.STATUS_CODE) == 0)
+            if(resJSON.getString(STATUS_CODE).equals(SUCCESS))
             {
-                System.out.println(resJSON.getString(Constants.MESSAGE));
+                System.out.println(resJSON.getString(MESSAGE));
 
-                Client.logger.info(Constants.LOGIN_SUCCESS);
+                logger.info(LOGIN_SUCCESS);
 
                 return true;
             }
             else
             {
-                System.out.println(resJSON.getString(Constants.MESSAGE));
+                System.out.println(resJSON.getString(MESSAGE));
 
-                Client.logger.error(Client.fatal, Constants.REGISTRATION_ERROR);
+                logger.error(fatal, REGISTRATION_ERROR);
 
                 return false;
             }

@@ -3,7 +3,7 @@ package com.remoteFSv2.server.handler;
 import com.remoteFSv2.server.Server;
 import com.remoteFSv2.server.controller.FileSystem;
 import com.remoteFSv2.server.controller.User;
-import com.remoteFSv2.utils.Constants;
+import static com.remoteFSv2.utils.Constants.*;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -32,7 +32,7 @@ public class ClientHandler extends Thread
     {
         try(this.clientConnection)
         {
-            Server.logger.trace(Constants.CLIENT_CONNECTED + clientConnection.clientSocket);
+            Server.logger.trace(CLIENT_CONNECTED + clientConnection.clientSocket);
 
             // Handle client requests
             var request = "";
@@ -51,9 +51,9 @@ public class ClientHandler extends Thread
             // send response that received json is improper format
             var response = new JSONObject();
 
-            response.put(Constants.STATUS_CODE, Constants.FAILED);
+            response.put(STATUS_CODE, FAILED);
 
-            response.put(Constants.MESSAGE, Constants.IMPROPER_JSON);
+            response.put(MESSAGE, IMPROPER_JSON);
 
             clientConnection.send(response.toString());
 
@@ -78,66 +78,66 @@ public class ClientHandler extends Thread
 
     private void processRequest(JSONObject request)
     {
-        var command = request.getString(Constants.COMMAND);
+        var command = request.getString(COMMAND);
 
         switch(command)
         {
-            case Constants.REGISTER:
+            case REGISTER:
 
                 userController.registerUser(request.getString("username"), request.getString("password"));
 
                 return;
 
-            case Constants.LOGIN:
+            case LOGIN:
 
                 userController.loginUser(request.getString("username"), request.getString("password"));
 
                 return;
 
-            case Constants.LIST:
+            case LIST:
 
-                fileSystemController.listFiles(request.getString(Constants.TOKEN), request.getString(Constants.CURRENT_DIR_PATH));
-
-                return;
-
-            case Constants.DOWNLOAD:
-
-                fileSystemController.sendFile(request.getString(Constants.TOKEN), request.getString(Constants.CURRENT_DIR_PATH), request.getString(Constants.FILE_NAME));
+                fileSystemController.listFiles(request.getString(TOKEN), request.getString(CURRENT_DIR_PATH));
 
                 return;
 
-            case Constants.UPLOAD:
+            case DOWNLOAD:
+
+                fileSystemController.sendFile(request.getString(TOKEN), request.getString(CURRENT_DIR_PATH), request.getString(FILE_NAME));
+
+                return;
+
+            case UPLOAD:
 
                 fileSystemController.receiveFile(request);
 
                 return;
 
-            case Constants.DELETE:
+            case DELETE:
 
-                fileSystemController.deleteFile(request.getString(Constants.TOKEN), request.getString(Constants.FILE_NAME), request.getString(Constants.CURRENT_DIR_PATH));
-
-                return;
-
-            case Constants.MKDIR:
-
-                fileSystemController.makeDirectory(request.getString(Constants.TOKEN), request.getString(Constants.DIR_NAME), request.getString(Constants.CURRENT_DIR_PATH));
+                fileSystemController.deleteFile(request.getString(TOKEN), request.getString(FILE_NAME), request.getString(CURRENT_DIR_PATH));
 
                 return;
 
-            case Constants.RMDIR:
+            case MKDIR:
 
-                fileSystemController.removeDirectory(request.getString(Constants.TOKEN), request.getString(Constants.DIR_NAME), request.getString(Constants.CURRENT_DIR_PATH));
+                fileSystemController.makeDirectory(request.getString(TOKEN), request.getString(DIR_NAME), request.getString(CURRENT_DIR_PATH));
 
                 return;
 
-            case Constants.CD:
+            case RMDIR:
 
-                fileSystemController.changeDirectory(request.getString(Constants.TOKEN), request.getString(Constants.DEST_PATH), request.getString(Constants.CURRENT_DIR_PATH));
+                fileSystemController.removeDirectory(request.getString(TOKEN), request.getString(DIR_NAME), request.getString(CURRENT_DIR_PATH));
+
+                return;
+
+            case CD:
+
+                fileSystemController.changeDirectory(request.getString(TOKEN), request.getString(DEST_PATH), request.getString(CURRENT_DIR_PATH));
 
                 return;
 
             default:
-                Server.logger.error(Constants.INVALID_INPUT);
+                Server.logger.error(INVALID_INPUT);
         }
     }
 }

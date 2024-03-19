@@ -55,6 +55,12 @@ public class Constants
 
     public static final String COMMAND = "command";
 
+    public static final String FILE_SIZE = "fileSize";
+
+    public static final String PAYLOAD = "payload";
+
+    public static final String OFFSET = "offset";
+
     public static final String FILE_NAME = "fileName";
 
     public static final String DIR_NAME = "dirName";
@@ -73,18 +79,14 @@ public class Constants
 
     public static final String LOGIN_SUCCESS = "Login successful!";
 
-    public static final String UNAUTHORIZED_ACCESS = "Unauthorized access!";
-
     // File Transfer Messages
     public static final String FILE_SENT_SUCCESS = "File sent successfully!";
-
-    public static final String FILE_SENT_ERROR = "Error! File not sent!";
 
     public static final String FILE_UPLOAD_ERROR = "Error uploading file!";
 
     public static final String FILE_UPLOAD_SUCCESS = "File uploaded successfully!";
 
-    public static final String DIR_ALREADY_EXISTS = "Directory already exists!";
+    public static final String DIR_ALREADY_EXISTS = "Directory/File with same name already exists!";
 
     public static final String FILE_DOWNLOAD_ERROR = "Error downloading file!";
 
@@ -113,9 +115,6 @@ public class Constants
     public static final String SERVER_DOWN = "Server Down!";
 
     // Client Messages
-
-    public static final String CLIENT_STOP_ERROR = "Error stopping client!";
-
     public static final String CONNECTION_ERROR = "Error connecting to server!";
 
     // File System Messages
@@ -130,8 +129,6 @@ public class Constants
     public static final String INVALID_PATH = "Invalid path!";
 
     // General Messages
-
-
     public static final String INVALID_INPUT = "Invalid input!";
 
     public static final String IMPROPER_JSON = "Improper JSON format!";

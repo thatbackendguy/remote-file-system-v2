@@ -2,8 +2,8 @@ package com.remoteFSv2.client.handler;
 
 import com.remoteFSv2.client.Client;
 import com.remoteFSv2.utils.Util;
-import com.remoteFSv2.utils.Config;
-import com.remoteFSv2.utils.Constants;
+import static com.remoteFSv2.utils.Config.*;
+import static com.remoteFSv2.utils.Constants.*;
 import org.json.JSONObject;
 
 import java.io.*;
@@ -14,9 +14,6 @@ import java.util.Objects;
 
 public class FileSystem implements Closeable
 {
-
-    private JSONObject request = new JSONObject();
-
     private final String token;
 
     private final Socket socket;
@@ -38,12 +35,13 @@ public class FileSystem implements Closeable
 
     public boolean listFiles() throws IOException
     {
+        var request = new JSONObject();
 
-        request.put(Constants.TOKEN, token);
+        request.put(TOKEN, token);
 
-        request.put(Constants.CURRENT_DIR_PATH, Client.currPath);
+        request.put(CURRENT_DIR_PATH, Client.currPath);
 
-        request.put(Constants.COMMAND, Constants.LIST);
+        request.put(COMMAND, LIST);
 
         writer.println(request.toString());
 
@@ -53,7 +51,7 @@ public class FileSystem implements Closeable
 
         var resJSON = new JSONObject(response);
 
-        if(resJSON.getString(Constants.STATUS_CODE).equals(Constants.SUCCESS))
+        if(resJSON.getString(STATUS_CODE).equals(SUCCESS))
         {
             System.out.println(resJSON.get("files"));
 
@@ -63,9 +61,9 @@ public class FileSystem implements Closeable
         }
         else
         {
-            System.out.println(resJSON.getString(Constants.MESSAGE));
+            System.out.println(resJSON.getString(MESSAGE));
 
-            Client.logger.error(resJSON.getString(Constants.MESSAGE));
+            Client.logger.error(resJSON.getString(MESSAGE));
 
             return false;
         }
@@ -73,15 +71,16 @@ public class FileSystem implements Closeable
 
     public void deleteFile(String fileName)
     {
+        var request = new JSONObject();
         try
         {
-            request.put(Constants.TOKEN, token);
+            request.put(TOKEN, token);
 
-            request.put(Constants.COMMAND, Constants.DELETE);
+            request.put(COMMAND, DELETE);
 
-            request.put(Constants.FILE_NAME, fileName);
+            request.put(FILE_NAME, fileName);
 
-            request.put(Constants.CURRENT_DIR_PATH, Client.currPath);
+            request.put(CURRENT_DIR_PATH, Client.currPath);
 
             writer.println(request.toString());
 
@@ -91,34 +90,36 @@ public class FileSystem implements Closeable
 
             var resJSON = new JSONObject(response);
 
-            System.out.println(resJSON.getString(Constants.MESSAGE));
+            System.out.println(resJSON.getString(MESSAGE));
 
-            Client.logger.info(Constants.SERVER + resJSON.get(Constants.MESSAGE));
+            Client.logger.info(resJSON.getString(MESSAGE));
 
         } catch(IOException | NullPointerException e)
         {
-            System.out.println(Constants.CLIENT + Constants.CONNECTION_ERROR);
+            System.out.println(CLIENT + CONNECTION_ERROR);
 
-            Client.logger.error(Constants.CONNECTION_ERROR);
+            Client.logger.error(CONNECTION_ERROR);
         }
     }
 
     public void makeOrRemoveDir(String command, String dirName, String currPath) throws IOException
     {
-        request.put(Constants.TOKEN, token);
+        var request = new JSONObject();
 
-        if(Objects.equals(command, Constants.MKDIR))
+        request.put(TOKEN, token);
+
+        if(Objects.equals(command, MKDIR))
         {
-            request.put(Constants.COMMAND, Constants.MKDIR);
+            request.put(COMMAND, MKDIR);
         }
         else
         {
-            request.put(Constants.COMMAND, Constants.RMDIR);
+            request.put(COMMAND, RMDIR);
         }
 
-        request.put(Constants.DIR_NAME, dirName);
+        request.put(DIR_NAME, dirName);
 
-        request.put(Constants.CURRENT_DIR_PATH, currPath);
+        request.put(CURRENT_DIR_PATH, currPath);
 
         writer.println(request.toString());
 
@@ -128,21 +129,23 @@ public class FileSystem implements Closeable
 
         var resJSON = new JSONObject(response);
 
-        System.out.println(resJSON.getString(Constants.MESSAGE));
+        System.out.println(resJSON.getString(MESSAGE));
 
-        Client.logger.info(resJSON.getString(Constants.MESSAGE));
+        Client.logger.info(resJSON.getString(MESSAGE));
 
     }
 
     public void changeDirectory(String destPath, String currPath) throws IOException
     {
-        request.put(Constants.TOKEN, token);
+        var request = new JSONObject();
 
-        request.put(Constants.DEST_PATH, destPath);
+        request.put(TOKEN, token);
 
-        request.put(Constants.CURRENT_DIR_PATH, currPath);
+        request.put(DEST_PATH, destPath);
 
-        request.put(Constants.COMMAND, Constants.CD);
+        request.put(CURRENT_DIR_PATH, currPath);
+
+        request.put(COMMAND, CD);
 
         writer.println(request.toString());
 
@@ -150,22 +153,24 @@ public class FileSystem implements Closeable
 
         var resJSON = new JSONObject(response);
 
-        if(resJSON.getString(Constants.STATUS_CODE).equals(Constants.SUCCESS))
+        if(resJSON.getString(STATUS_CODE).equals(SUCCESS))
         {
-            Client.logger.info("Directory changed to {}!", resJSON.getString(Constants.CURRENT_DIR_PATH));
+            Client.logger.info("Directory changed to {}!", resJSON.getString(CURRENT_DIR_PATH));
 
-            Client.currPath = resJSON.getString(Constants.CURRENT_DIR_PATH);
+            Client.currPath = resJSON.getString(CURRENT_DIR_PATH);
         }
         else
         {
-            System.out.println(resJSON.get(Constants.MESSAGE));
+            System.out.println(resJSON.get(MESSAGE));
 
-            Client.logger.info(resJSON.getString(Constants.MESSAGE));
+            Client.logger.info(resJSON.getString(MESSAGE));
         }
     }
 
     public void sendFile(String localPath) throws IOException
     {
+        var request = new JSONObject();
+
         Path filePath = Paths.get(localPath);
 
         if(Util.validateFilePath(filePath))
@@ -178,7 +183,7 @@ public class FileSystem implements Closeable
 
                 var bytes = 0;
 
-                var buffer = new byte[Config.CHUNK_SIZE];
+                var buffer = new byte[CHUNK_SIZE];
 
                 while((bytes = fileInputStream.read(buffer)) != -1)
                 {
@@ -186,15 +191,15 @@ public class FileSystem implements Closeable
                     // Convert the byte array to a Base64 encoded string
                     String payload = Base64.getEncoder().encodeToString(buffer);
 
-                    request.put(Constants.COMMAND, Constants.UPLOAD);
+                    request.put(COMMAND, UPLOAD);
 
-                    request.put(Constants.TOKEN, token);
+                    request.put(TOKEN, token);
 
-                    request.put(Constants.CURRENT_DIR_PATH, Client.currPath);
+                    request.put(CURRENT_DIR_PATH, Client.currPath);
 
-                    request.put(Constants.STATUS_CODE, Constants.PENDING);
+                    request.put(STATUS_CODE, PENDING);
 
-                    request.put(Constants.FILE_NAME, fileName);
+                    request.put(FILE_NAME, fileName);
 
                     request.put("fileSize", fileSize);
 
@@ -206,9 +211,9 @@ public class FileSystem implements Closeable
                     writer.println(request.toString());
                 }
 
-                Client.logger.info("{}: {}", fileName,Constants.FILE_UPLOAD_SUCCESS);
+                Client.logger.info("{}: {}", fileName,FILE_UPLOAD_SUCCESS);
 
-                request.put(Constants.STATUS_CODE, Constants.SUCCESS);
+                request.put(STATUS_CODE, SUCCESS);
 
                 writer.println(request.toString());
 
@@ -216,36 +221,38 @@ public class FileSystem implements Closeable
 
                 JSONObject resJSON = new JSONObject(res);
 
-                System.out.println(resJSON.getString(Constants.MESSAGE));
+                System.out.println(resJSON.getString(MESSAGE));
 
-                Client.logger.info(resJSON.getString(Constants.MESSAGE));
+                Client.logger.info(resJSON.getString(MESSAGE));
 
             } catch(FileNotFoundException e)
             {
-                System.out.println(Constants.CLIENT + Constants.FILE_NOT_FOUND);
+                System.out.println(CLIENT + FILE_NOT_FOUND);
 
-                Client.logger.error(Constants.FILE_NOT_FOUND);
+                Client.logger.error(FILE_NOT_FOUND);
             }
         }
         else
         {
-            System.out.println(Constants.CLIENT + Constants.INVALID_PATH);
+            System.out.println(CLIENT + INVALID_PATH);
 
-            Client.logger.error(Constants.INVALID_PATH);
+            Client.logger.error(INVALID_PATH);
         }
     }
 
     public void receiveFile(String fileName)
     {
-        var filePath = Config.ROOT_DIR_CLIENT + "/" + fileName;
+        var request = new JSONObject();
 
-        request.put(Constants.TOKEN, token);
+        var filePath = ROOT_DIR_CLIENT + "/" + fileName;
 
-        request.put(Constants.COMMAND, Constants.DOWNLOAD);
+        request.put(TOKEN, token);
 
-        request.put(Constants.CURRENT_DIR_PATH, Client.currPath);
+        request.put(COMMAND, DOWNLOAD);
 
-        request.put(Constants.FILE_NAME, fileName.trim());
+        request.put(CURRENT_DIR_PATH, Client.currPath);
+
+        request.put(FILE_NAME, fileName.trim());
 
         writer.println(request.toString());
 
@@ -257,20 +264,20 @@ public class FileSystem implements Closeable
 
             if(resJSON != null) // server is down
             {
-                if(!resJSON.getString(Constants.STATUS_CODE).equals(Constants.FAILED))
+                if(!resJSON.getString(STATUS_CODE).equals(FAILED))
                 {
-                    var buffer = new byte[Config.CHUNK_SIZE]; // 8KB
+                    var buffer = new byte[CHUNK_SIZE]; // 8KB
 
-                    var size = resJSON.getInt("fileSize");
+                    var size = resJSON.getInt(FILE_SIZE);
 
                     int bytes = 0;
 
-                    while(resJSON.getString(Constants.STATUS_CODE).equals(Constants.PENDING) && size > 0)
+                    while(resJSON.getString(STATUS_CODE).equals(PENDING) && size > 0)
                     {
                         // Decode the Base64 encoded string to a byte array
-                        buffer = Base64.getDecoder().decode(resJSON.getString("payload"));
+                        buffer = Base64.getDecoder().decode(resJSON.getString(PAYLOAD));
 
-                        bytes = resJSON.getInt("offset");
+                        bytes = resJSON.getInt(OFFSET);
 
                         // Here we write the file using write method
                         fos.write(buffer, 0, bytes);
@@ -288,22 +295,22 @@ public class FileSystem implements Closeable
                     }
                 }
 
-                System.out.println(resJSON.getString(Constants.MESSAGE));
+                System.out.println(resJSON.getString(MESSAGE));
 
-                Client.logger.info("{}: {}", fileName,Constants.FILE_DOWNLOAD_SUCCESS);
+                Client.logger.info("{}: {}", fileName,FILE_DOWNLOAD_SUCCESS);
             }
             else
             {
-                System.out.println(Constants.CLIENT + Constants.SERVER_DOWN);
+                System.out.println(CLIENT + SERVER_DOWN);
 
-                Client.logger.error(Constants.SERVER_DOWN);
+                Client.logger.error(SERVER_DOWN);
             }
 
         } catch(IOException e)
         {
-            System.out.println(Constants.CLIENT + Constants.FILE_DOWNLOAD_ERROR);
+            System.out.println(CLIENT + FILE_DOWNLOAD_ERROR);
 
-            Client.logger.error(Constants.FILE_DOWNLOAD_ERROR);
+            Client.logger.error(FILE_DOWNLOAD_ERROR);
         }
     }
 

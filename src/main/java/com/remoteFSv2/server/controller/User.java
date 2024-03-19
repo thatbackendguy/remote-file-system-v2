@@ -2,8 +2,8 @@ package com.remoteFSv2.server.controller;
 
 import com.remoteFSv2.server.Server;
 import com.remoteFSv2.server.handler.ClientConnection;
-import com.remoteFSv2.utils.Config;
-import com.remoteFSv2.utils.Constants;
+import static com.remoteFSv2.utils.Config.*;
+import static com.remoteFSv2.utils.Constants.*;
 
 import com.remoteFSv2.utils.JWTUtil;
 import org.json.JSONObject;
@@ -20,6 +20,8 @@ public class User
 
     public static ConcurrentHashMap<String, String> userCredentials = new ConcurrentHashMap<>();
 
+    public static ConcurrentHashMap<String, Object> userEntity = new ConcurrentHashMap<>();
+
     public User(ClientConnection clientConnection)
     {
         this.clientConnection = clientConnection;
@@ -31,23 +33,25 @@ public class User
 
         if(userCredentials.containsKey(username))
         {
-            response.put(Constants.STATUS_CODE, 1);
+            response.put(STATUS_CODE, FAILED);
 
-            response.put(Constants.MESSAGE, Constants.SERVER + Constants.REGISTRATION_ERROR);
+            response.put(MESSAGE, SERVER + REGISTRATION_ERROR);
 
             clientConnection.send(response.toString());
 
-            Server.logger.error(Constants.REGISTRATION_ERROR);
+            Server.logger.error(REGISTRATION_ERROR);
         }
         else
         {
             userCredentials.put(username, password);
 
-            response.put(Constants.STATUS_CODE, 0);
+            userEntity.put(username,new Object());
 
-            response.put(Constants.MESSAGE, Constants.SERVER + Constants.REGISTRATION_SUCCESS);
+            response.put(STATUS_CODE, SUCCESS);
 
-            var path = Path.of(Config.ROOT_DIR_SERVER, username);
+            response.put(MESSAGE, SERVER + REGISTRATION_SUCCESS);
+
+            var path = Path.of(ROOT_DIR_SERVER, username);
 
             try
             {
@@ -55,10 +59,10 @@ public class User
 
             } catch(IOException e)
             {
-                Server.logger.error(Constants.SERVER + Constants.MKDIR_FAIL);
+                Server.logger.error(SERVER + MKDIR_FAIL);
             }
 
-            Server.logger.info(Constants.REGISTRATION_SUCCESS);
+            Server.logger.info(REGISTRATION_SUCCESS);
 
             clientConnection.send(response.toString());
         }
@@ -71,13 +75,13 @@ public class User
 
         if(userCredentials.isEmpty())
         {
-            response.put(Constants.STATUS_CODE, 1);
+            response.put(STATUS_CODE, 1);
 
-            response.put(Constants.MESSAGE, Constants.SERVER + Constants.USER_NOT_FOUND);
+            response.put(MESSAGE, SERVER + USER_NOT_FOUND);
 
             clientConnection.send(response.toString());
 
-            Server.logger.error(Constants.USER_NOT_FOUND);
+            Server.logger.error(USER_NOT_FOUND);
         }
         if(userCredentials.containsKey(username)) // user exists
         {
@@ -85,23 +89,23 @@ public class User
                 {
                     var token = JWTUtil.generateToken(username);
 
-                    response.put(Constants.TOKEN, token);
+                    response.put(TOKEN, token);
 
-                    response.put(Constants.STATUS_CODE, 0);
+                    response.put(STATUS_CODE, 0);
 
-                    response.put(Constants.TOKEN, token);
+                    response.put(TOKEN, token);
 
-                    response.put(Constants.MESSAGE, Constants.SERVER + Constants.LOGIN_SUCCESS);
+                    response.put(MESSAGE, SERVER + LOGIN_SUCCESS);
 
                     clientConnection.send(response.toString());
 
-                    Server.logger.info(username + " " + Constants.LOGIN_SUCCESS);
+                    Server.logger.info(username + " " + LOGIN_SUCCESS);
                 }
                 else
                 {
-                    response.put(Constants.STATUS_CODE, 1);
+                    response.put(STATUS_CODE, 1);
 
-                    response.put(Constants.MESSAGE, Constants.SERVER + Constants.INVALID_CREDENTIALS);
+                    response.put(MESSAGE, SERVER + INVALID_CREDENTIALS);
 
                     clientConnection.send(response.toString());
 
@@ -112,13 +116,13 @@ public class User
         }
         else // User doesn't exists
         {
-            response.put(Constants.STATUS_CODE, 1);
+            response.put(STATUS_CODE, 1);
 
-            response.put(Constants.MESSAGE, Constants.SERVER + Constants.INVALID_CREDENTIALS);
+            response.put(MESSAGE, SERVER + INVALID_CREDENTIALS);
 
             clientConnection.send(response.toString());
 
-            Server.logger.error(Constants.INVALID_CREDENTIALS);
+            Server.logger.error(INVALID_CREDENTIALS);
         }
     }
 }
