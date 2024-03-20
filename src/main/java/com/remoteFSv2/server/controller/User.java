@@ -1,9 +1,10 @@
 package com.remoteFSv2.server.controller;
 
-import com.remoteFSv2.server.Server;
 import com.remoteFSv2.server.handler.ClientConnection;
+
 import static com.remoteFSv2.utils.Config.*;
 import static com.remoteFSv2.utils.Constants.*;
+import static com.remoteFSv2.server.Server.*;
 
 import com.remoteFSv2.utils.JWTUtil;
 import org.json.JSONObject;
@@ -39,13 +40,13 @@ public class User
 
             clientConnection.send(response.toString());
 
-            Server.logger.error(REGISTRATION_ERROR);
+            logger.info(REGISTRATION_ERROR);
         }
         else
         {
             userCredentials.put(username, password);
 
-            userEntity.put(username,new Object());
+            userEntity.put(username, new Object());
 
             response.put(STATUS_CODE, SUCCESS);
 
@@ -59,10 +60,10 @@ public class User
 
             } catch(IOException e)
             {
-                Server.logger.error(SERVER + MKDIR_FAIL);
+                logger.error(SERVER + MKDIR_FAIL);
             }
 
-            Server.logger.info(REGISTRATION_SUCCESS);
+            logger.info(REGISTRATION_SUCCESS);
 
             clientConnection.send(response.toString());
         }
@@ -81,36 +82,36 @@ public class User
 
             clientConnection.send(response.toString());
 
-            Server.logger.error(USER_NOT_FOUND);
+            logger.info(USER_NOT_FOUND);
         }
         if(userCredentials.containsKey(username)) // user exists
         {
-                if(password.equals(userCredentials.get(username))) // password match
-                {
-                    var token = JWTUtil.generateToken(username);
+            if(password.equals(userCredentials.get(username))) // password match
+            {
+                var token = JWTUtil.generateToken(username);
 
-                    response.put(TOKEN, token);
+                response.put(TOKEN, token);
 
-                    response.put(STATUS_CODE, 0);
+                response.put(STATUS_CODE, 0);
 
-                    response.put(TOKEN, token);
+                response.put(TOKEN, token);
 
-                    response.put(MESSAGE, SERVER + LOGIN_SUCCESS);
+                response.put(MESSAGE, SERVER + LOGIN_SUCCESS);
 
-                    clientConnection.send(response.toString());
+                clientConnection.send(response.toString());
 
-                    Server.logger.info(username + " " + LOGIN_SUCCESS);
-                }
-                else
-                {
-                    response.put(STATUS_CODE, 1);
+                logger.info(username + " " + LOGIN_SUCCESS);
+            }
+            else
+            {
+                response.put(STATUS_CODE, 1);
 
-                    response.put(MESSAGE, SERVER + INVALID_CREDENTIALS);
+                response.put(MESSAGE, SERVER + INVALID_CREDENTIALS);
 
-                    clientConnection.send(response.toString());
+                clientConnection.send(response.toString());
 
-                    Server.logger.error("Login not successful!");
-                }
+                logger.info("{} Login not successful!", username);
+            }
 
 
         }
@@ -122,7 +123,7 @@ public class User
 
             clientConnection.send(response.toString());
 
-            Server.logger.error(INVALID_CREDENTIALS);
+            logger.info(username + " " + INVALID_CREDENTIALS);
         }
     }
 }
