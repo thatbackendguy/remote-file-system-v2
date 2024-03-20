@@ -74,9 +74,9 @@ public class User
     {
         var response = new JSONObject();
 
-        if(userCredentials.isEmpty())
+        if(userCredentials.isEmpty()) // if map is empty -> no user available
         {
-            response.put(STATUS_CODE, 1);
+            response.put(STATUS_CODE, FAILED);
 
             response.put(MESSAGE, SERVER + USER_NOT_FOUND);
 
@@ -84,46 +84,37 @@ public class User
 
             logger.info(USER_NOT_FOUND);
         }
-        if(userCredentials.containsKey(username)) // user exists
+        else // map is not empty -> users are available
         {
-            if(password.equals(userCredentials.get(username))) // password match
+            if(userCredentials.containsKey(username)) // user exists
             {
-                var token = JWTUtil.generateToken(username);
+                if(password.equals(userCredentials.get(username))) // password match
+                {
+                    var token = JWTUtil.generateToken(username);
 
-                response.put(TOKEN, token);
+                    response.put(TOKEN, token);
 
-                response.put(STATUS_CODE, 0);
+                    response.put(STATUS_CODE, SUCCESS);
 
-                response.put(TOKEN, token);
+                    response.put(TOKEN, token);
 
-                response.put(MESSAGE, SERVER + LOGIN_SUCCESS);
+                    response.put(MESSAGE, SERVER + LOGIN_SUCCESS);
 
-                clientConnection.send(response.toString());
+                    clientConnection.send(response.toString());
 
-                logger.info(username + " " + LOGIN_SUCCESS);
+                    logger.info(username + " " + LOGIN_SUCCESS);
+                }
+                else
+                {
+                    response.put(STATUS_CODE, FAILED);
+
+                    response.put(MESSAGE, SERVER + INVALID_CREDENTIALS);
+
+                    clientConnection.send(response.toString());
+
+                    logger.info("{}: {}", username,INVALID_CREDENTIALS);
+                }
             }
-            else
-            {
-                response.put(STATUS_CODE, 1);
-
-                response.put(MESSAGE, SERVER + INVALID_CREDENTIALS);
-
-                clientConnection.send(response.toString());
-
-                logger.info("{} Login not successful!", username);
-            }
-
-
-        }
-        else // User doesn't exists
-        {
-            response.put(STATUS_CODE, 1);
-
-            response.put(MESSAGE, SERVER + INVALID_CREDENTIALS);
-
-            clientConnection.send(response.toString());
-
-            logger.info(username + " " + INVALID_CREDENTIALS);
         }
     }
 }

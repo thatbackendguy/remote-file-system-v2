@@ -74,6 +74,7 @@ public class User
             }
 
         }
+        
         else if(command.equals(REGISTER))
         {
             request.put(COMMAND, REGISTER);
