@@ -10,3 +10,10 @@ java -jar remoteFSv2.jar server
 ```
 java -jar remoteFSv2.jar client
 ```
+> Note: If running server and client on different machine, add `config.json` file where you are executing the JAR file.
+> ```
+> {
+>   "HOST": "<IP of server>",
+>   "PORT": <port>
+> }
+> ```
