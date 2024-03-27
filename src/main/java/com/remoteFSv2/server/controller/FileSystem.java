@@ -70,7 +70,7 @@ public class FileSystem
 
                         response.put(MESSAGE, SERVER + currPath + " " + EMPTY_DIRECTORY);
 
-                        Server.logger.error("{}: {} {}", username, currPath, EMPTY_DIRECTORY);
+                        Server.logger.info("{}: {} {}", username, currPath, EMPTY_DIRECTORY);
                     }
                 } catch(IOException e)
                 {

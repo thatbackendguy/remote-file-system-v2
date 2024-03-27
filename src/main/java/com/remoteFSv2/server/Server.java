@@ -5,12 +5,12 @@ import java.net.ServerSocket;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import static com.remoteFSv2.utils.Config.*;
+import static com.remoteFSv2.utils.Constants.*;
 
 import com.remoteFSv2.server.controller.FileSystem;
 import com.remoteFSv2.server.controller.User;
 import com.remoteFSv2.server.handler.ClientConnection;
 import com.remoteFSv2.server.handler.ClientHandler;
-import com.remoteFSv2.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
@@ -34,7 +34,7 @@ public class Server
 
             serverSocket = new ServerSocket(SERVER_PORT);
 
-            logger.info(Constants.SERVER + Constants.SERVER_START_SUCCESS + SERVER_PORT);
+            logger.info(SERVER + SERVER_START_SUCCESS + SERVER_PORT);
 
             threadPoolExecutor = new ThreadPoolExecutor(CORE_POOL_SIZE, MAXIMUM_POOL_SIZE, KEEP_ALIVE_TIME, TIME_UNIT, WORKERS);
 
@@ -55,11 +55,11 @@ public class Server
 
         } catch(IOException io)
         {
-            logger.error(fatal, Constants.SERVER + Constants.SERVER_START_ERROR);
+            logger.error(fatal, SERVER + SERVER_START_ERROR);
 
         } catch(Exception e)
         {
-            logger.error(fatal, Constants.SERVER + Constants.SERVER_DOWN);
+            logger.error(fatal, SERVER + SERVER_DOWN);
 
         } finally
         {
@@ -69,7 +69,7 @@ public class Server
 
                 threadPoolExecutor.shutdown();
 
-                logger.error(fatal, Constants.SERVER + Constants.SERVER_STOP);
+                logger.error(fatal, SERVER + SERVER_STOP);
         }
 
     }
