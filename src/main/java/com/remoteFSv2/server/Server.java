@@ -2,7 +2,8 @@ package com.remoteFSv2.server;
 
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static com.remoteFSv2.utils.Config.*;
 import static com.remoteFSv2.utils.Constants.*;
@@ -25,7 +26,7 @@ public class Server
     {
         ServerSocket serverSocket = null;
 
-        ThreadPoolExecutor threadPoolExecutor = null;
+        ExecutorService threadPoolExecutor = null;
 
         ClientConnection clientConnection = null;
 
@@ -36,7 +37,7 @@ public class Server
 
             logger.info(SERVER + SERVER_START_SUCCESS + SERVER_PORT);
 
-            threadPoolExecutor = new ThreadPoolExecutor(CORE_POOL_SIZE, MAXIMUM_POOL_SIZE, KEEP_ALIVE_TIME, TIME_UNIT, WORKERS);
+            threadPoolExecutor = Executors.newCachedThreadPool();
 
             while(true)
             {
