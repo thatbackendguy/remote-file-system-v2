@@ -2,15 +2,15 @@
 created by: https://github.com/yashpra1010/
 
 ### Steps to run
-1. Run a fresh server
+1. Run server
 ```
-java -jar remoteFSv2.jar server
+java BootStrap server
 ```
-2. Run a fresh client
+2. Run client
 ```
-java -jar remoteFSv2.jar client
+java BootStrap client
 ```
-> Note: If running server and client on different machine, add `config.json` file where you are executing the JAR file.
+> Note: If running the server and client on different machines, add the `config.json` file where the program is being executed.
 > ```
 > {
 >   "HOST": "<IP of server>",
