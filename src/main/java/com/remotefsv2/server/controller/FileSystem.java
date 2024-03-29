@@ -1,18 +1,21 @@
-package com.remoteFSv2.server.controller;
+package com.remotefsv2.server.controller;
 
-import com.remoteFSv2.server.Server;
-import com.remoteFSv2.server.handler.ClientConnection;
-import com.remoteFSv2.utils.Util;
-import static com.remoteFSv2.utils.Config.*;
-import static com.remoteFSv2.utils.Constants.*;
-import com.remoteFSv2.utils.JWTUtil;
+import com.remotefsv2.server.Server;
+import com.remotefsv2.server.handler.ClientConnection;
+import com.remotefsv2.utils.Util;
+
+import static com.remotefsv2.utils.Config.*;
+import static com.remotefsv2.utils.Constants.*;
+
+import com.remotefsv2.utils.JWTUtil;
 import org.json.JSONObject;
 
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
+import java.util.stream.Stream;
 
-import static com.remoteFSv2.server.controller.User.*;
+import static com.remotefsv2.server.controller.User.*;
 
 public class FileSystem
 {
@@ -43,8 +46,9 @@ public class FileSystem
 
                     var files = new ArrayList<String>();
 
-
-                        Files.list(directory).forEach(path -> {
+                    try(Stream<Path> stream = Files.list(directory))
+                    {
+                        stream.forEach(path -> {
                             if(Files.isDirectory(path))
                             {
                                 files.add(path.getFileName().toString() + "/");
@@ -54,7 +58,7 @@ public class FileSystem
                                 files.add(path.getFileName().toString());
                             }
                         });
-
+                    }
 
                     if(!files.isEmpty())
                     {
@@ -88,7 +92,6 @@ public class FileSystem
         }
 
         clientConnection.send(response.toString());
-
     }
 
     public void deleteFile(String token, String fileName, String currPath)
@@ -113,13 +116,13 @@ public class FileSystem
 
                             response.put(MESSAGE, SERVER + fileName + " " + FILE_DELETE_SUCCESS);
 
-                            Server.logger.info("{}: {}", username, FILE_DELETE_SUCCESS);
+                            Server.logger.info(MESSAGE_FORMATTER, username, FILE_DELETE_SUCCESS);
                         }
 
                     }
                     else
                     {
-                        Server.logger.error("{}: {}", username, FILE_NOT_FOUND);
+                        Server.logger.error(MESSAGE_FORMATTER, username, FILE_NOT_FOUND);
 
                         response.put(MESSAGE, SERVER + fileName + " " + FILE_NOT_FOUND);
                     }
@@ -135,7 +138,7 @@ public class FileSystem
         {
             response.put(MESSAGE, SERVER + fileName + " " + FILE_DELETE_ERROR);
 
-            Server.logger.error(fileName + " " + FILE_DELETE_ERROR + e.getMessage());
+            Server.logger.error("{}:{}\nError:{}", FILE_DELETE_ERROR, fileName, e.getMessage());
         }
 
         clientConnection.send(response.toString());
@@ -159,20 +162,20 @@ public class FileSystem
 
                     response.put(MESSAGE, SERVER + dirName + " " + MKDIR_SUCCESS);
 
-                    Server.logger.info("{}: {}", username, MKDIR_SUCCESS);
+                    Server.logger.info(MESSAGE_FORMATTER, username, MKDIR_SUCCESS);
 
                 } catch(FileAlreadyExistsException e)
                 {
                     response.put(MESSAGE, SERVER + dirName + " " + DIR_ALREADY_EXISTS);
 
-                    Server.logger.error("{}: {}", username, DIR_ALREADY_EXISTS);
+                    Server.logger.error(MESSAGE_FORMATTER, username, DIR_ALREADY_EXISTS);
 
                 } catch(IOException e)
                 {
                     // parent dir not exists
                     response.put(MESSAGE, SERVER + currPath + " " + INVALID_PATH);
 
-                    Server.logger.error("{}: {}", username, INVALID_PATH);
+                    Server.logger.error(MESSAGE_FORMATTER, username, INVALID_PATH);
                 }
             }
         }
@@ -207,7 +210,7 @@ public class FileSystem
 
                         response.put(MESSAGE, SERVER + dirName + " " + DIR_DELETE_SUCCESS);
 
-                        Server.logger.info("{}: {}", username, DIR_DELETE_SUCCESS);
+                        Server.logger.info(MESSAGE_FORMATTER, username, DIR_DELETE_SUCCESS);
 
 
                     } catch(IOException e)
@@ -215,7 +218,7 @@ public class FileSystem
                         // delete failed
                         response.put(MESSAGE, SERVER + dirName + " " + DIR_DELETE_ERROR);
 
-                        Server.logger.error("{}: {}", username, DIR_DELETE_ERROR);
+                        Server.logger.error(MESSAGE_FORMATTER, username, DIR_DELETE_ERROR);
                     }
                 }
                 else
@@ -223,7 +226,7 @@ public class FileSystem
                     // delete failed
                     response.put(MESSAGE, SERVER + currPath + " " + INVALID_PATH);
 
-                    Server.logger.error("{}: {}", username, INVALID_PATH);
+                    Server.logger.error(MESSAGE_FORMATTER, username, INVALID_PATH);
                 }
             }
         }
@@ -263,7 +266,7 @@ public class FileSystem
 
                     response.put(MESSAGE, SERVER + currPath + "/" + destPath + " " + INVALID_PATH);
 
-                    Server.logger.error("{}: {}", username, INVALID_PATH);
+                    Server.logger.error(MESSAGE_FORMATTER, username, INVALID_PATH);
                 }
             }
         }
@@ -296,7 +299,7 @@ public class FileSystem
         {
             synchronized(userEntity.get(username))
             {
-                var filePath = ROOT_DIR_SERVER + username + currPath + "/" + fileName;
+                var filePath = ROOT_DIR_SERVER + username + currPath + PATH_SEP + fileName;
 
                 try(FileOutputStream fos = new FileOutputStream(filePath))
                 {
@@ -324,7 +327,7 @@ public class FileSystem
                 {
                     response.put(MESSAGE, SERVER + fileName + " " + FILE_UPLOAD_ERROR);
 
-                    Server.logger.error("{}: {}", fileName, FILE_UPLOAD_ERROR);
+                    Server.logger.error(MESSAGE_FORMATTER, fileName, FILE_UPLOAD_ERROR);
                 }
             }
         }
@@ -337,7 +340,7 @@ public class FileSystem
 
         response.put(MESSAGE, SERVER + fileName + " " + FILE_UPLOAD_SUCCESS);
 
-        Server.logger.info("{}: {}", fileName, FILE_UPLOAD_SUCCESS);
+        Server.logger.info(MESSAGE_FORMATTER, fileName, FILE_UPLOAD_SUCCESS);
 
         clientConnection.send(response.toString());
     }
@@ -385,7 +388,7 @@ public class FileSystem
                             clientConnection.send(response.toString());
                         }
 
-                        Server.logger.info("{}: {}", fileName, FILE_SENT_SUCCESS);
+                        Server.logger.info(MESSAGE_FORMATTER, fileName, FILE_SENT_SUCCESS);
 
                         response.put(STATUS_CODE, SUCCESS);
 

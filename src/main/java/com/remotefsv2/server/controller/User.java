@@ -1,27 +1,28 @@
-package com.remoteFSv2.server.controller;
+package com.remotefsv2.server.controller;
 
-import com.remoteFSv2.server.handler.ClientConnection;
+import com.remotefsv2.server.handler.ClientConnection;
 
-import static com.remoteFSv2.utils.Config.*;
-import static com.remoteFSv2.utils.Constants.*;
-import static com.remoteFSv2.server.Server.*;
+import static com.remotefsv2.utils.Config.*;
+import static com.remotefsv2.utils.Constants.*;
+import static com.remotefsv2.server.Server.*;
 
-import com.remoteFSv2.utils.JWTUtil;
+import com.remotefsv2.utils.JWTUtil;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 
 public class User
 {
     private final ClientConnection clientConnection;
 
-    public static ConcurrentHashMap<String, String> userCredentials = new ConcurrentHashMap<>();
+    public static ConcurrentMap<String, String> userCredentials = new ConcurrentHashMap<>();
 
-    public static ConcurrentHashMap<String, Object> userEntity = new ConcurrentHashMap<>();
+    public static ConcurrentMap<String, Object> userEntity = new ConcurrentHashMap<>();
 
     public User(ClientConnection clientConnection)
     {
@@ -102,7 +103,7 @@ public class User
 
                     clientConnection.send(response.toString());
 
-                    logger.info(username + " " + LOGIN_SUCCESS);
+                    logger.info(MESSAGE_FORMATTER, username, LOGIN_SUCCESS);
                 }
                 else
                 {
@@ -112,7 +113,7 @@ public class User
 
                     clientConnection.send(response.toString());
 
-                    logger.info("{}: {}", username,INVALID_CREDENTIALS);
+                    logger.info("{}: {}", username, INVALID_CREDENTIALS);
                 }
             }
         }

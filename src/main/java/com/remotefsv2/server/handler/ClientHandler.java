@@ -1,9 +1,11 @@
-package com.remoteFSv2.server.handler;
+package com.remotefsv2.server.handler;
 
-import com.remoteFSv2.server.Server;
-import com.remoteFSv2.server.controller.FileSystem;
-import com.remoteFSv2.server.controller.User;
-import static com.remoteFSv2.utils.Constants.*;
+import com.remotefsv2.server.Server;
+import com.remotefsv2.server.controller.FileSystem;
+import com.remotefsv2.server.controller.User;
+
+import static com.remotefsv2.utils.Constants.*;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -32,14 +34,14 @@ public class ClientHandler extends Thread
     {
         try(this.clientConnection)
         {
-            Server.logger.trace(CLIENT_CONNECTED + clientConnection.clientSocket);
+            Server.logger.trace(MESSAGE_FORMATTER, CLIENT_CONNECTED, clientConnection.clientSocket);
 
             // Handle client requests
             var request = "";
 
             while((request = clientConnection.receive()) != null)
             {
-                Server.logger.trace("Received request: " + request);
+                Server.logger.trace(MESSAGE_FORMATTER, "Received request", request);
 
                 var requestJSON = new JSONObject(request);
 
@@ -59,7 +61,7 @@ public class ClientHandler extends Thread
 
         } catch(IOException e)
         {
-            Server.logger.error("Error handling client request: " + e.getMessage());
+            Server.logger.error(MESSAGE_FORMATTER, "Error handling client request", e.getMessage());
 
         } finally
         {
@@ -67,11 +69,11 @@ public class ClientHandler extends Thread
             {
                 clientConnection.close(); // Close client socket
 
-                Server.logger.trace("Client connection closed: " + clientConnection);
+                Server.logger.trace(MESSAGE_FORMATTER, "Client connection closed", clientConnection);
 
             } catch(IOException e)
             {
-                Server.logger.error(Server.fatal, "[Server] Error while closing client connection: " + e.getMessage());
+                Server.logger.error(Server.fatal, MESSAGE_FORMATTER, "[Server] Error while closing client connection", e.getMessage());
             }
         }
     }

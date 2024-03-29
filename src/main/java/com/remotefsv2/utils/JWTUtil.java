@@ -1,4 +1,4 @@
-package com.remoteFSv2.utils;
+package com.remotefsv2.utils;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;

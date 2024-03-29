@@ -1,7 +1,7 @@
-package com.remoteFSv2.client.handler;
+package com.remotefsv2.client.handler;
 
-import static com.remoteFSv2.client.Client.*;
-import static com.remoteFSv2.utils.Constants.*;
+import static com.remotefsv2.client.Client.*;
+import static com.remotefsv2.utils.Constants.*;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -11,12 +11,13 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.Map;
 
 public class User
 {
     private JSONObject request = new JSONObject();
 
-    public static HashMap<String, String> userData = new HashMap<>();
+    public static Map<String, String> userData = new HashMap<>();
 
     public final Socket socket;
 
@@ -60,7 +61,7 @@ public class User
 
                 System.out.println(resJSON.getString(MESSAGE));
 
-                logger.info(LOGIN_SUCCESS);
+                LOGGER.info(LOGIN_SUCCESS);
 
                 return true;
             }
@@ -68,7 +69,7 @@ public class User
             {
                 System.out.println(resJSON.getString(MESSAGE));
 
-                logger.error("Login Failed!");
+                LOGGER.error("Login Failed!");
 
                 return false;
             }
@@ -93,7 +94,7 @@ public class User
             {
                 System.out.println(resJSON.getString(MESSAGE));
 
-                logger.info(LOGIN_SUCCESS);
+                LOGGER.info(LOGIN_SUCCESS);
 
                 return true;
             }
@@ -101,7 +102,7 @@ public class User
             {
                 System.out.println(resJSON.getString(MESSAGE));
 
-                logger.error(fatal, REGISTRATION_ERROR);
+                LOGGER.error(FATAL, REGISTRATION_ERROR);
 
                 return false;
             }

@@ -60,7 +60,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>com.remoteFSv2.BootStrap</mainClass>
+                            <mainClass>com.remotefsv2.BootStrap</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

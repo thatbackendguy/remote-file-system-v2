@@ -1,8 +1,8 @@
-package com.remoteFSv2.client.connection;
+package com.remotefsv2.client.connection;
 
-import com.remoteFSv2.client.Client;
-import static com.remoteFSv2.utils.Config.*;
-import static com.remoteFSv2.utils.Constants.*;
+import com.remotefsv2.client.Client;
+import static com.remotefsv2.utils.Config.*;
+import static com.remotefsv2.utils.Constants.*;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -27,14 +27,13 @@ public class ClientSocket
     {
         try
         {
-            var socket = new Socket(HOST, CLIENT_PORT);
-
-            return socket;
-        } catch(IOException e)
+            return new Socket(HOST, CLIENT_PORT);
+        }
+        catch(IOException e)
         {
             System.out.println(CLIENT + CONNECTION_ERROR);
 
-            Client.logger.error(CONNECTION_ERROR);
+            Client.LOGGER.error(CONNECTION_ERROR);
 
             System.out.println("[Client] Retrying again in 5 seconds...");
 
@@ -45,19 +44,18 @@ public class ClientSocket
 
             } catch(InterruptedException ex)
             {
-                System.out.println(CLIENT + "Error! See logs for more info...");
+                Thread.currentThread().interrupt(); // Preserve the interrupted status
 
-                Client.logger.error(Client.fatal, ex.getMessage());
+                Client.LOGGER.error(Client.FATAL, ex.getMessage());
 
             }
             try
             {
                 Client.start();
-            } catch(NullPointerException | IOException exception)
+            }
+            catch(NullPointerException | IOException exception)
             {
-                System.out.println(CLIENT + "Error starting client!");
-
-                Client.logger.error(Client.fatal, "Error starting client!");
+                Client.LOGGER.error(Client.FATAL, CONNECTION_ERROR);
             }
         }
 

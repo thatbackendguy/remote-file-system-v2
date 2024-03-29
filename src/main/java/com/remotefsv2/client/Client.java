@@ -1,11 +1,13 @@
-package com.remoteFSv2.client;
+package com.remotefsv2.client;
 
-import com.remoteFSv2.client.connection.ClientSocket;
-import com.remoteFSv2.client.handler.FileSystem;
-import com.remoteFSv2.client.handler.User;
+import com.remotefsv2.client.connection.ClientSocket;
+import com.remotefsv2.client.handler.FileSystem;
+import com.remotefsv2.client.handler.User;
 
-import com.remoteFSv2.utils.Util;
-import static com.remoteFSv2.utils.Constants.*;
+import com.remotefsv2.utils.Util;
+
+import static com.remotefsv2.utils.Constants.*;
+
 import io.bretty.console.table.Alignment;
 import io.bretty.console.table.ColumnFormatter;
 import io.bretty.console.table.Table;
@@ -23,13 +25,16 @@ import java.util.Scanner;
 
 public class Client
 {
-    public static final Logger logger = LoggerFactory.getLogger(Client.class);
 
-    public static final Marker fatal = MarkerFactory.getMarker("FATAL");
+    private Client() {}
 
-    public static String currPath = "/";
+    public static final Logger LOGGER = LoggerFactory.getLogger(Client.class);
 
-    public static void start() throws IOException,NullPointerException
+    public static final Marker FATAL = MarkerFactory.getMarker("FATAL");
+
+    public static String CURRENT_PATH = "/";
+
+    public static void start() throws IOException
     {
         Socket socket = null;
 
@@ -149,7 +154,7 @@ public class Client
                         return;
 
                     default:
-                        logger.info(INVALID_INPUT);
+                        LOGGER.info(INVALID_INPUT);
 
                         System.out.println(INVALID_INPUT + " Valid range = [0-2]");
                 }
@@ -158,32 +163,37 @@ public class Client
             {
                 System.out.println(CLIENT + IMPROPER_JSON);
 
-                logger.error(IMPROPER_JSON);
+                LOGGER.error(IMPROPER_JSON);
 
             } catch(IOException e) // error while connecting to socket
             {
                 System.out.println(CLIENT + CONNECTION_ERROR);
 
-                logger.error(fatal, CONNECTION_ERROR);
+                LOGGER.error(FATAL, CONNECTION_ERROR);
 
                 break;
             } catch(InputMismatchException e) // input scanner
             {
                 System.out.println(INVALID_INPUT + " Valid range = [0-2]");
 
-                logger.error(INVALID_INPUT);
+                LOGGER.error(INVALID_INPUT);
 
             } catch(NullPointerException e) // when server is down and client is on IO
             {
                 System.out.println(CLIENT + SERVER_DOWN);
 
-                logger.error(fatal, SERVER_DOWN);
-            }
-            finally
+                LOGGER.error(FATAL, SERVER_DOWN);
+            } finally
             {
-                socket.close();
+                if(socket != null)
+                {
+                    socket.close();
+                }
 
-                userHandler.close();
+                if(userHandler != null)
+                {
+                    userHandler.close();
+                }
             }
         }
 
@@ -245,13 +255,13 @@ public class Client
             switch(command)
             {
                 // PRINTS LIST OF AVAILABLE COMMAND
-                case "help":
+                case HELP:
 
                     if(!argument.isEmpty())
                     {
                         System.out.println(CLIENT + INVALID_INPUT);
 
-                        logger.error(INVALID_INPUT + "at HELP");
+                        LOGGER.error(INVALID_INPUT + "at HELP command");
 
                         break;
                     }
@@ -261,18 +271,18 @@ public class Client
                     break;
 
                 // PRINT CURRENT WORKING DIR
-                case "pwd":
+                case PWD:
 
                     if(!argument.isEmpty())
                     {
                         System.out.println(CLIENT + INVALID_INPUT);
 
-                        logger.error(INVALID_INPUT + "at PWD");
+                        LOGGER.error(INVALID_INPUT + "at PWD command");
 
                         break;
                     }
 
-                    System.out.println("Current working directory: " + currPath);
+                    System.out.println("Current working directory: " + CURRENT_PATH);
 
                     break;
 
@@ -283,7 +293,7 @@ public class Client
                     {
                         System.out.println(CLIENT + INVALID_INPUT);
 
-                        logger.error(INVALID_INPUT + "at LIST");
+                        LOGGER.error(INVALID_INPUT + "at LIST command");
 
                         break;
                     }
@@ -306,7 +316,7 @@ public class Client
                     {
                         System.out.println(CLIENT + INVALID_INPUT);
 
-                        logger.error(INVALID_INPUT + "at DOWNLOAD");
+                        LOGGER.error(INVALID_INPUT + "at DOWNL commandOAD");
 
                         break;
                     }
@@ -331,7 +341,7 @@ public class Client
                     {
                         System.out.println(CLIENT + INVALID_INPUT);
 
-                        logger.error(INVALID_INPUT + "at UPLOAD");
+                        LOGGER.error(INVALID_INPUT + "at UPLOA commandD");
 
                         break;
                     }
@@ -356,7 +366,7 @@ public class Client
                     {
                         System.out.println(CLIENT + INVALID_INPUT);
 
-                        logger.error(INVALID_INPUT + "at REMOVE FILE");
+                        LOGGER.error(INVALID_INPUT + "at REMOV commandE FILE");
 
                         break;
                     }
@@ -381,7 +391,7 @@ public class Client
                     {
                         System.out.println(CLIENT + INVALID_INPUT);
 
-                        logger.error(INVALID_INPUT + "at MKDIR");
+                        LOGGER.error(INVALID_INPUT + "at MKDIR command");
 
                         break;
                     }
@@ -391,7 +401,7 @@ public class Client
 
                         fileSystem = new FileSystem(User.userData.get(username), socket);
 
-                        fileSystem.makeOrRemoveDir(MKDIR, argument, currPath);
+                        fileSystem.makeOrRemoveDir(MKDIR, argument, CURRENT_PATH);
 
                     }
 
@@ -406,7 +416,7 @@ public class Client
                     {
                         System.out.println(CLIENT + INVALID_INPUT);
 
-                        logger.error(INVALID_INPUT + "at RMDIR");
+                        LOGGER.error(INVALID_INPUT + "at RMDIR command");
 
                         break;
                     }
@@ -416,7 +426,7 @@ public class Client
 
                         fileSystem = new FileSystem(User.userData.get(username), socket);
 
-                        fileSystem.makeOrRemoveDir(RMDIR, argument, currPath);
+                        fileSystem.makeOrRemoveDir(RMDIR, argument, CURRENT_PATH);
 
                     }
 
@@ -429,19 +439,19 @@ public class Client
 
                     if(argument.isEmpty()) // go to root directory
                     {
-                        currPath = "/";
+                        CURRENT_PATH = "/";
 
-                        Client.logger.info("Directory changed to root folder!");
+                        Client.LOGGER.info("Directory changed to root folder!");
                     }
                     else if(argument.equals("..")) // go back to parent directory
                     {
-                        if(currPath.equals("/"))
+                        if(CURRENT_PATH.equals("/"))
                         {
                             break;
                         }
-                        currPath = String.valueOf(Path.of(currPath).getParent());
+                        CURRENT_PATH = String.valueOf(Path.of(CURRENT_PATH).getParent());
 
-                        Client.logger.info("Directory changed to {}!",currPath);
+                        Client.LOGGER.info("Directory changed to {}!", CURRENT_PATH);
                     }
                     else if(argument.equals(".")) // current path
                     {
@@ -453,7 +463,7 @@ public class Client
 
                         fileSystem = new FileSystem(User.userData.get(username), socket);
 
-                        fileSystem.changeDirectory(argument, currPath);
+                        CURRENT_PATH = fileSystem.changeDirectory(argument, CURRENT_PATH);
 
                         fileSystem.close();
                     }
@@ -467,12 +477,12 @@ public class Client
                     {
                         System.out.println(CLIENT + INVALID_INPUT);
 
-                        logger.error(INVALID_INPUT + "at LOGOUT");
+                        LOGGER.error(INVALID_INPUT + "at LOGOU commandT");
 
                         break;
                     }
 
-                    currPath = "/";
+                    CURRENT_PATH = "/";
 
                     return;
 
@@ -480,7 +490,7 @@ public class Client
 
                     System.out.println(CLIENT + INVALID_INPUT);
 
-                    logger.error(INVALID_INPUT);
+                    LOGGER.error(INVALID_INPUT);
             }
         }
     }

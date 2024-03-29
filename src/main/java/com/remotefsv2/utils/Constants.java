@@ -1,7 +1,8 @@
-package com.remoteFSv2.utils;
+package com.remotefsv2.utils;
 
 public class Constants
 {
+    public static final String MESSAGE_FORMATTER = "{}: {}";
 
     public static final String SERVER = "[Server] ";
 
@@ -68,6 +69,12 @@ public class Constants
     public static final String CURRENT_DIR_PATH = "currPath";
 
     public static final String DEST_PATH = "destPath";
+
+    public static final String PATH_SEP = "/";
+
+    public static final String HELP = "help";
+
+    public static final String PWD = "pwd";
 
 
     // Login Messages

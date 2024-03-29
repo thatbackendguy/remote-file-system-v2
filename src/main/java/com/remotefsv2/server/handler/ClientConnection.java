@@ -1,4 +1,4 @@
-package com.remoteFSv2.server.handler;
+package com.remotefsv2.server.handler;
 
 import java.io.*;
 import java.net.Socket;

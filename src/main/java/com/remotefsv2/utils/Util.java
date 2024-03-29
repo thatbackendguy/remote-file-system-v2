@@ -1,4 +1,4 @@
-package com.remoteFSv2.utils;
+package com.remotefsv2.utils;
 
 import java.io.*;
 import java.nio.file.*;

@@ -34,12 +34,12 @@
     </root>
 
     <!-- Logger for Client -->
-    <logger name="com.remoteFSv2.client.Client" level="TRACE" additivity="false">
+    <logger name="com.remotefsv2.client.Client" level="TRACE" additivity="false">
         <appender-ref ref="FILE_CLIENT" />
     </logger>
 
     <!-- Logger for Server -->
-    <logger name="com.remoteFSv2.server.Server" level="TRACE" additivity="false">
+    <logger name="com.remotefsv2.server.Server" level="TRACE" additivity="false">
         <appender-ref ref="FILE_SERVER" />
     </logger>
 </configuration>
