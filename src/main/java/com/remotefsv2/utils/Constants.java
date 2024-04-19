@@ -140,8 +140,5 @@ public class Constants
 
     public static final String IMPROPER_JSON = "Improper JSON format!";
 
-    private Constants()
-    {
-        // Private constructor to prevent instantiation
-    }
+    private Constants() {}
 }

@@ -77,6 +77,7 @@ public class Server
             {
                 clientConnection.close();
             }
+
             if(threadPoolExecutor != null)
             {
                 threadPoolExecutor.shutdown();
