@@ -2,7 +2,7 @@
 created by: https://github.com/thatbackendguy/
 
 ## Flow Diagram
-![Remote File System: Flow Diagram](./Client-side Flow Diagram.png)
+![Remote File System: Flow Diagram](https://raw.githubusercontent.com/thatbackendguy/remote-file-system-v2/main/Client-side%20Flow%20Diagram.png)
 
 ## Steps to run
 1. Run server
