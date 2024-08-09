@@ -2,7 +2,7 @@
 created by: https://github.com/thatbackendguy/
 
 ## Flow Diagram
-![Remote File System: Flow Diagram](Client-side Flow Diagram.png)
+![Remote File System: Flow Diagram]("./Client-side Flow Diagram.png")
 
 ## Steps to run
 1. Run server
@@ -17,6 +17,6 @@ java BootStrap client
 > ```json
 > {
 >   "HOST": "<IP of server>",
->   "PORT": <port>
+>   "PORT": "<port>"
 > }
 > ```
